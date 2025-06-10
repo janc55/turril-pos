@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('unit', 50); // e.g., 'gramos', 'ml', 'unidades', 'piezas'
             $table->decimal('cost_per_unit', 10, 4)->nullable(); // Costo por unidad
+            //$table->decimal('cost_average', 10, 4)->nullable(); Agregado para calcular el costo promedio de los ingredientes
             $table->timestamps();
         });
     }

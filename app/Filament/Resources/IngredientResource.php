@@ -17,21 +17,39 @@ class IngredientResource extends Resource
 {
     protected static ?string $model = Ingredient::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-group';
+
+    protected static ?string $modelLabel = 'Ingrediente';
+
+    protected static ?string $navigationLabel = 'Ingredientes';
+
+    protected static ?string $navigationGroup = 'Inventario';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label('Nombre')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Textarea::make('description')
+                    ->label('Descripción')
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('unit')
-                    ->required()
-                    ->maxLength(50),
+                Forms\Components\Select::make('unit')
+                    ->label('Unidad')
+                    ->options([
+                        'gramos' => 'Gramos (gr)',
+                        'mililitros' => 'Mililitros (ml)',
+                        'unidades' => 'Unidades (un)',
+                        'piezas' => 'Piezas (pz)',
+                        'kg' => 'Kilogramos (kg)',
+                        'litros' => 'Litros (L)',
+                    ])
+                    ->required(),
                 Forms\Components\TextInput::make('cost_per_unit')
+                    ->label('Costo por Unidad')
+                    ->prefix('Bs.')
                     ->numeric(),
             ]);
     }
@@ -41,11 +59,14 @@ class IngredientResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Nombre')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('unit')
+                    ->label('Unidad')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('cost_per_unit')
-                    ->numeric()
+                    ->label('Costo por Unidad')
+                    ->money('BOB')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

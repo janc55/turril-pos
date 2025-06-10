@@ -10,6 +10,8 @@ class EditIngredient extends EditRecord
 {
     protected static string $resource = IngredientResource::class;
 
+    protected static ?string $title = 'Editar Ingrediente';
+
     protected function getHeaderActions(): array
     {
         return [

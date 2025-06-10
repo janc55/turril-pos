@@ -13,7 +13,9 @@ class ListCurrentStocks extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Agregar Stock')
+                ->icon('heroicon-o-plus-circle'),
         ];
     }
 }

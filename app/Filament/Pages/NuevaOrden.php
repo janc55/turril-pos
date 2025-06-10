@@ -18,6 +18,10 @@ use Illuminate\Support\Facades\Log;
 class NuevaOrden extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-shopping-cart'; // Icono para el sidebar
+
+    protected static ?string $modelLabel = 'Nueva Orden';
+
+    protected static ?string $navigationGroup = 'Ventas';
     protected static string $view = 'filament.pages.nueva-orden'; // La vista Blade
     protected static ?string $navigationLabel = 'Nueva Orden'; // Texto en el sidebar
     protected static ?string $title = 'Punto de Venta'; // Título de la página

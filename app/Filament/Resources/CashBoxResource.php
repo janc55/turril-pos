@@ -19,6 +19,12 @@ class CashBoxResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $modelLabel = 'Caja';
+
+    protected static ?string $navigationLabel = 'Cajas';
+
+    protected static ?string $navigationGroup = 'Caja';
+
     public static function form(Form $form): Form
     {
         return $form

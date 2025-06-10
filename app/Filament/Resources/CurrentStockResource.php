@@ -19,18 +19,28 @@ class CurrentStockResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $modelLabel = 'Stock Actual';
+
+    protected static ?string $navigationLabel = 'Stocks Actuales';
+
+    protected static ?string $navigationGroup = 'Inventario';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('branch_id')
+                Forms\Components\Select::make('branch_id')
+                    ->label('Sucursal')
                     ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('product_id')
-                    ->numeric(),
-                Forms\Components\TextInput::make('ingredient_id')
-                    ->numeric(),
+                    ->relationship('branch', 'name'),
+                Forms\Components\Select::make('product_id')
+                    ->label('Producto')
+                    ->relationship('product', 'name'),
+                Forms\Components\Select::make('ingredient_id')
+                    ->label('Ingrediente')
+                    ->relationship('ingredient', 'name'),
                 Forms\Components\TextInput::make('quantity')
+                    ->label('Cantidad')
                     ->required()
                     ->numeric(),
             ]);
@@ -40,16 +50,20 @@ class CurrentStockResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('branch_id')
+                Tables\Columns\TextColumn::make('branch.name')
+                    ->label('Sucursal')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('product_id')
+                Tables\Columns\TextColumn::make('product.name')
+                    ->label('Producto')    
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('ingredient_id')
+                Tables\Columns\TextColumn::make('ingredient.name')
+                    ->label('Ingrediente')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('quantity')
+                    ->label('Cantidad')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')

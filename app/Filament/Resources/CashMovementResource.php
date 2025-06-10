@@ -19,6 +19,12 @@ class CashMovementResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $modelLabel = 'Movimientos de Caja';
+
+    protected static ?string $navigationLabel = 'Movimientos de Caja';
+
+    protected static ?string $navigationGroup = 'Caja';
+
     public static function form(Form $form): Form
     {
         return $form

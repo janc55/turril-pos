@@ -19,6 +19,10 @@ class RecipeIngredientResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationParentItem = 'Recetas';
+
+    protected static ?string $navigationGroup = 'Administración';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -39,10 +43,10 @@ class RecipeIngredientResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('recipe_id')
+                Tables\Columns\TextColumn::make('recipe.product.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('ingredient_id')
+                Tables\Columns\TextColumn::make('ingredient.name')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('quantity')

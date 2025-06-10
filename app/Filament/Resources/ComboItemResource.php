@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ComboItemResource\Pages;
 use App\Filament\Resources\ComboItemResource\RelationManagers;
 use App\Models\ComboItem;
+use App\Models\Product;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -19,27 +20,48 @@ class ComboItemResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $modelLabel = 'Combo';
+
+    protected static ?string $navigationLabel = 'Combos';
+
+    protected static ?string $navigationParentItem = 'Productos';
+
+    protected static ?string $navigationGroup = 'Inventario';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('combo_product_id')
+                Forms\Components\Select::make('combo_product_id')
+                    ->label('Combo')
+                    ->options(
+                        Product::where('type', '=', 'combo') // Filtra para excluir productos que son combos
+                            ->pluck('name', 'id')
+                    )
+                    ->required(),
+                Forms\Components\Select::make('product_id')
+                    ->options(
+                        Product::where('type', '!=', 'combo') // Filtra para excluir productos que son combos
+                            ->pluck('name', 'id')
+                    )
                     ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('product_id')
-                    ->numeric(),
+                    ->label('Producto'),
                 Forms\Components\TextInput::make('quantity')
+                    ->label('Cantidad')    
                     ->required()
                     ->numeric(),
                 Forms\Components\TextInput::make('min_choices')
+                    ->label('Mínimo de opciones')
                     ->required()
                     ->numeric()
                     ->default(1),
                 Forms\Components\TextInput::make('max_choices')
+                    ->label('Máximo de opciones')
                     ->required()
                     ->numeric()
                     ->default(1),
                 Forms\Components\Toggle::make('is_customizable')
+                    ->label('Personalizable')
                     ->required(),
             ]);
     }

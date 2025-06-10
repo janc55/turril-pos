@@ -19,6 +19,12 @@ class SaleResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $modelLabel = 'Venta';
+
+    protected static ?string $navigationLabel = 'Ventas';
+
+    protected static ?string $navigationGroup = 'Ventas';
+
     public static function form(Form $form): Form
     {
         return $form

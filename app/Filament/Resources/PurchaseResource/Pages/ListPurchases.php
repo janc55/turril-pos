@@ -13,7 +13,9 @@ class ListPurchases extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Nueva Compra')
+                ->icon('heroicon-o-plus-circle'),
         ];
     }
 }

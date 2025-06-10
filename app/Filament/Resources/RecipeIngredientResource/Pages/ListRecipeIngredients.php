@@ -13,7 +13,9 @@ class ListRecipeIngredients extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Nuevo Ingrediente de Receta')
+                ->icon('heroicon-o-plus-circle'),
         ];
     }
 }

@@ -19,27 +19,40 @@ class StockMovementResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $modelLabel = 'Movimiento de Stock';
+
+    protected static ?string $navigationLabel = 'Movimientos de stock';
+
+    protected static ?string $navigationGroup = 'Inventario';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('branch_id')
+                Forms\Components\Select::make('branch_id')
                     ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('product_id')
-                    ->numeric(),
-                Forms\Components\TextInput::make('ingredient_id')
-                    ->numeric(),
-                Forms\Components\TextInput::make('type')
+                    ->relationship('branch', 'name'),
+                Forms\Components\Select::make('product_id')
+                    ->relationship('product', 'name'),
+                Forms\Components\Select::make('ingredient_id')
+                    ->relationship('ingredient', 'name'),
+                Forms\Components\Radio::make('type')
+                    ->options([
+                        'entry' => 'Entrada',
+                        'exit' => 'Salida',
+                        'adjustment' => 'Ajuste',
+                        'transfer_in' => 'Transferencia Entrada',
+                        'transfer_out' => 'Transferencia Salida',
+                    ])->columns(2)
+                    ->label('Tipo de Movimiento')
                     ->required(),
                 Forms\Components\TextInput::make('quantity')
+                    ->label('Cantidad')
                     ->required()
                     ->numeric(),
                 Forms\Components\TextInput::make('unit')
+                    ->label('Unidad')
                     ->maxLength(50),
-                Forms\Components\TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
                 Forms\Components\Textarea::make('description')
                     ->columnSpanFull(),
             ]);
@@ -49,22 +62,29 @@ class StockMovementResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('branch_id')
+                Tables\Columns\TextColumn::make('branch.name')
+                    ->label('Sucursal')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('product_id')
+                Tables\Columns\TextColumn::make('product.name')
+                    ->label('Producto')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('ingredient_id')
+                Tables\Columns\TextColumn::make('ingredient.name')
+                    ->label('Ingrediente')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('type'),
+                Tables\Columns\TextColumn::make('type')
+                    ->label('Tipo'),
                 Tables\Columns\TextColumn::make('quantity')
+                    ->label('Cantidad')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('unit')
+                    ->label('Unidad')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('user_id')
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Usuario')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
