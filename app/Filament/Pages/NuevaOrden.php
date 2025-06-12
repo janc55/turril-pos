@@ -219,7 +219,7 @@ class NuevaOrden extends Page
                                 ]);
                             }
                         }
-                    } else if ($product->type === 'drink' || $product->is_combo) {
+                    } else if ($product->type === 'drink') {
                         $neededQuantity = $item['quantity'];
                         $currentStock = CurrentStock::where('branch_id', $userBranchId)
                                                     ->where('product_id', $product->id)
@@ -244,7 +244,70 @@ class NuevaOrden extends Page
                             'user_id' => Auth::user()->id,
                             'description' => 'Venta de producto ' . $product->name . ' (Orden #' . $sale->id . ')',
                         ]);
+                    } else if ($product->is_combo) {
+                    $comboItems = \App\Models\ComboItem::where('combo_product_id', $product->id)->get();
+
+                    foreach ($comboItems as $comboItem) {
+                        $comboProduct = \App\Models\Product::find($comboItem->product_id);
+                        $comboNeededQuantity = $item['quantity'] * $comboItem->quantity;
+
+                        if ($comboProduct->type === 'sandwich') {
+                            $recipe = $comboProduct->recipes->first();
+                            if ($recipe) {
+                                foreach ($recipe->ingredients as $ingredient) {
+                                    $neededQuantity = $ingredient->pivot->quantity * $comboNeededQuantity;
+                                    $currentStock = CurrentStock::where('branch_id', $userBranchId)
+                                                                ->where('ingredient_id', $ingredient->id)
+                                                                ->first();
+
+                                    if (!$currentStock || $currentStock->quantity < $neededQuantity) {
+                                        DB::rollBack();
+                                        Notification::make()
+                                            ->title('Stock insuficiente para ' . $ingredient->name . ' en el combo ' . $product->name)
+                                            ->danger()
+                                            ->send();
+                                        return;
+                                    }
+
+                                    StockMovement::create([
+                                        'branch_id' => $userBranchId,
+                                        'ingredient_id' => $ingredient->id,
+                                        'type' => 'exit',
+                                        'quantity' => $neededQuantity,
+                                        'unit' => $ingredient->unit,
+                                        'user_id' => Auth::user()->id,
+                                        'description' => 'Consumo por venta de combo ' . $product->name . ' (Incluye sandwich ' . $comboProduct->name . ', ingrediente ' . $ingredient->name . ') (Orden #' . $sale->id . ')',
+                                    ]);
+                                }
+                            }
+                        } else if ($comboProduct->type === 'drink') {
+                            $currentStock = CurrentStock::where('branch_id', $userBranchId)
+                                                        ->where('product_id', $comboProduct->id)
+                                                        ->first();
+
+                            if (!$currentStock || $currentStock->quantity < $comboNeededQuantity) {
+                                DB::rollBack();
+                                Notification::make()
+                                    ->title('Stock insuficiente para bebida ' . $comboProduct->name . ' en el combo ' . $product->name)
+                                    ->danger()
+                                    ->send();
+                                return;
+                            }
+
+                            StockMovement::create([
+                                'branch_id' => $userBranchId,
+                                'product_id' => $comboProduct->id,
+                                'type' => 'exit',
+                                'quantity' => $comboNeededQuantity,
+                                'unit' => 'unidades',
+                                'user_id' => Auth::user()->id,
+                                'description' => 'Venta de combo ' . $product->name . ' (Incluye bebida ' . $comboProduct->name . ') (Orden #' . $sale->id . ')',
+                            ]);
+                        }
+                        // Puedes agregar más tipos aquí según tu sistema.
+                        // else if ($comboProduct->is_combo) { ... } para combos anidados si lo necesitas.
                     }
+                }
                 }
             }
 
