@@ -7,6 +7,8 @@ use App\Filament\Resources\SaleResource\RelationManagers;
 use App\Models\Sale;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -29,26 +31,58 @@ class SaleResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('branch_id')
+                Forms\Components\Select::make('branch_id')
+                    ->label('Sucursal')
                     ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
+                    ->relationship('branch', 'name'),
                 Forms\Components\TextInput::make('total_amount')
+                    ->label('Monto Total')
                     ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('discount_amount')
-                    ->required()
+                    ->prefix('Bs.')
                     ->numeric()
-                    ->default(0.00),
+                    ->live()
+                    ->afterStateUpdated(function (Set $set, $state, Get $get) {
+                    // $state es el monto total ingresado
+                    $discount = floatval($get('discount_amount'));
+                    $total = floatval($state);
+                    $set('final_amount', max($total - $discount, 0));
+                }),
+                Forms\Components\TextInput::make('discount_amount')
+                    ->label('Descuento')
+                    ->required()
+                    ->prefix('Bs.')
+                    ->numeric()
+                    ->live()
+                    ->default(0.00)
+                    ->afterStateUpdated(function (Set $set, $state, Get $get) {
+                        $total = floatval($get('total_amount'));
+                        $discount = floatval($state);
+                        $set('final_amount', max($total - $discount, 0));
+                    }),
                 Forms\Components\TextInput::make('final_amount')
+                    ->label('Monto Final')
                     ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('payment_method')
-                    ->required()
-                    ->maxLength(50),
-                Forms\Components\TextInput::make('status')
+                    ->prefix('Bs.')
+                    ->numeric()
+                    ->disabled(),
+                Forms\Components\Select::make('payment_method')
+                    ->label('Método de Pago')
+                    ->options([
+                        'cash' => 'Efectivo',
+                        'credit_card' => 'Tarjeta de Crédito',
+                        'debit_card' => 'Tarjeta de Débito',
+                        'transfer' => 'Transferencia',
+                        'other' => 'Otro',
+                    ])
+                    ->required(),
+                Forms\Components\Radio::make('status')
+                    ->label('Estado')
+                    ->options([
+                        'completed' => 'Completada',
+                        'pending' => 'Pendiente',
+                        'cancelled' => 'Cancelada',
+                    ])
+                    ->default('completed')
                     ->required(),
                 Forms\Components\Textarea::make('notes')
                     ->columnSpanFull(),
@@ -59,22 +93,38 @@ class SaleResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('branch_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('branch.name')
+                    ->label('Sucursal')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Usuario')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total_amount')
-                    ->numeric()
+                    ->label('Monto Total')
+                    ->money('Bs.')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('discount_amount')
-                    ->numeric()
+                    ->label('Descuento')
+                    ->money('Bs.')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('final_amount')
-                    ->numeric()
+                    ->label('Monto Final')
+                    ->money('Bs.')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('payment_method')
+                Tables\Columns\IconColumn::make('payment_method')
+                    ->label('Método de Pago')
+                    ->icon(fn (string $state): string => match ($state) {
+                        'Efectivo' => 'heroicon-o-banknotes',
+                        'Tarjeta' => 'heroicon-o-credit-card',
+                        'QR' => 'heroicon-o-qr-code',
+                        'transfer' => 'heroicon-o-arrow-right-circle',
+                    })
+                    ->color(fn (string $state): string => match ($state) {
+                        'Efectivo' => 'success',
+                        'Tarjeta' => 'primary',
+                        'QR' => 'warning',
+                        'transfer' => 'info',
+                    })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status'),
                 Tables\Columns\TextColumn::make('created_at')

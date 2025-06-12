@@ -140,7 +140,6 @@ class NuevaOrden extends Page
             return;
         }
 
-        // Obtener la sucursal del usuario
         $userBranchId = Auth::user()->branch_id;
         if (!$userBranchId) {
             Notification::make()
@@ -150,10 +149,9 @@ class NuevaOrden extends Page
             return;
         }
 
-        // Obtener la caja activa
         $cashBox = CashBox::where('branch_id', $userBranchId)
-                           ->where('status', 'open')
-                           ->first();
+                        ->where('status', 'open')
+                        ->first();
 
         if (!$cashBox) {
             Notification::make()
@@ -170,14 +168,14 @@ class NuevaOrden extends Page
                 'branch_id' => $userBranchId,
                 'user_id' => Auth::user()->id,
                 'total_amount' => $this->total,
-                'discount_amount' => 0, // Puedes agregar lógica para descuentos
+                'discount_amount' => 0,
                 'final_amount' => $this->total,
                 'payment_method' => $this->paymentMethod,
                 'status' => 'completed',
                 'notes' => 'Venta desde POS',
             ]);
 
-            // 2. Agregar ítems a la Venta y Actualizar Stock
+            // 2. Agregar ítems a la Venta y Registrar Movimientos de Stock
             foreach ($this->cart as $item) {
                 SaleItem::create([
                     'sale_id' => $sale->id,
@@ -185,35 +183,22 @@ class NuevaOrden extends Page
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['unit_price'],
                     'subtotal' => $item['subtotal'],
-                    'total' => $item['subtotal'], // Total después de descuento por ítem (aquí sin descuento)
+                    'total' => $item['subtotal'],
                 ]);
 
-                // Lógica de Descuento de Stock
                 $product = Product::find($item['product_id']);
 
                 if ($product->stock_management) {
                     if ($product->type === 'sandwich') {
-                        // Descontar ingredientes de la receta
-                        $recipe = $product->recipes->first(); // Asumiendo que un sandwich tiene 1 receta principal
+                        $recipe = $product->recipes->first();
                         if ($recipe) {
                             foreach ($recipe->ingredients as $ingredient) {
                                 $neededQuantity = $ingredient->pivot->quantity * $item['quantity'];
                                 $currentStock = CurrentStock::where('branch_id', $userBranchId)
                                                             ->where('ingredient_id', $ingredient->id)
                                                             ->first();
-                                if ($currentStock && $currentStock->quantity >= $neededQuantity) {
-                                    $currentStock->decrement('quantity', $neededQuantity);
-                                    StockMovement::create([
-                                        'branch_id' => $userBranchId,
-                                        'ingredient_id' => $ingredient->id,
-                                        'type' => 'exit',
-                                        'quantity' => $neededQuantity,
-                                        'unit' => $ingredient->unit,
-                                        'user_id' => Auth::user()->id,
-                                        'description' => 'Consumo por venta de ' . $product->name,
-                                    ]);
-                                } else {
-                                    // Manejar stock insuficiente (opcional: revertir transacción, notificar)
+
+                                if (!$currentStock || $currentStock->quantity < $neededQuantity) { // Verificar stock antes de crear el movimiento
                                     DB::rollBack();
                                     Notification::make()
                                         ->title('Stock insuficiente para ' . $ingredient->name)
@@ -221,27 +206,26 @@ class NuevaOrden extends Page
                                         ->send();
                                     return;
                                 }
+
+                                // AQUI: SOLO CREA EL MOVIMIENTO DE STOCK. EL OBSERVER SE ENCARGARÁ DE ACTUALIZAR CURRENT_STOCK.
+                                StockMovement::create([
+                                    'branch_id' => $userBranchId,
+                                    'ingredient_id' => $ingredient->id,
+                                    'type' => 'exit',
+                                    'quantity' => $neededQuantity,
+                                    'unit' => $ingredient->unit,
+                                    'user_id' => Auth::user()->id,
+                                    'description' => 'Consumo por venta de ' . $product->name . ' (Orden #' . $sale->id . ')',
+                                ]);
                             }
                         }
                     } else if ($product->type === 'drink' || $product->is_combo) {
-                        // Descontar el producto directamente (ej. Coca-Cola)
+                        $neededQuantity = $item['quantity'];
                         $currentStock = CurrentStock::where('branch_id', $userBranchId)
                                                     ->where('product_id', $product->id)
                                                     ->first();
-                        $neededQuantity = $item['quantity'];
 
-                        if ($currentStock && $currentStock->quantity >= $neededQuantity) {
-                            $currentStock->decrement('quantity', $neededQuantity);
-                            StockMovement::create([
-                                'branch_id' => $userBranchId,
-                                'product_id' => $product->id,
-                                'type' => 'exit',
-                                'quantity' => $neededQuantity,
-                                'unit' => 'unidades', // Asume unidad para productos terminados
-                                'user_id' => Auth::user()->id,
-                                'description' => 'Venta de producto ' . $product->name,
-                            ]);
-                        } else {
+                        if (!$currentStock || $currentStock->quantity < $neededQuantity) { // Verificar stock antes de crear el movimiento
                             DB::rollBack();
                             Notification::make()
                                 ->title('Stock insuficiente para ' . $product->name)
@@ -249,13 +233,23 @@ class NuevaOrden extends Page
                                 ->send();
                             return;
                         }
+
+                        // AQUI: SOLO CREA EL MOVIMIENTO DE STOCK. EL OBSERVER SE ENCARGARÁ DE ACTUALIZAR CURRENT_STOCK.
+                        StockMovement::create([
+                            'branch_id' => $userBranchId,
+                            'product_id' => $product->id,
+                            'type' => 'exit',
+                            'quantity' => $neededQuantity,
+                            'unit' => 'unidades',
+                            'user_id' => Auth::user()->id,
+                            'description' => 'Venta de producto ' . $product->name . ' (Orden #' . $sale->id . ')',
+                        ]);
                     }
-                    // Considerar lógica para 'combo' si es más complejo que solo descontar productos directos
                 }
             }
 
             // 3. Registrar Movimiento de Caja
-            $cashBox->increment('current_balance', $sale->final_amount);
+            // AQUI: SOLO CREA EL MOVIMIENTO DE CAJA. EL OBSERVER SE ENCARGARÁ DE ACTUALIZAR CASHBOX.CURRENT_BALANCE.
             CashMovement::create([
                 'cash_box_id' => $cashBox->id,
                 'user_id' => Auth::user()->id,
@@ -272,10 +266,10 @@ class NuevaOrden extends Page
                 ->success()
                 ->send();
 
-            // Limpiar el carrito y actualizar el balance de la caja
             $this->cart = [];
             $this->total = 0;
-            $this->loadCashBoxBalance();
+            // $this->loadCashBoxBalance(); // Esta función probablemente depende de current_balance, ya se actualizará por el observer.
+                                        // Si la necesitas para refrescar la vista, asegúrate que lea el valor de la base de datos.
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -283,7 +277,6 @@ class NuevaOrden extends Page
                 ->title('Error al realizar el pedido: ' . $e->getMessage())
                 ->danger()
                 ->send();
-            // Logear el error para debugging
             Log::error('Error al realizar pedido POS: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
         }
     }

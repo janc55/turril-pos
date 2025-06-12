@@ -9,4 +9,5 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateCurrentStock extends CreateRecord
 {
     protected static string $resource = CurrentStockResource::class;
+    
 }

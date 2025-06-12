@@ -4,9 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CashBoxResource\Pages;
 use App\Filament\Resources\CashBoxResource\RelationManagers;
+use App\Models\Branch;
 use App\Models\CashBox;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -29,9 +31,12 @@ class CashBoxResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('branch_id')
+                Forms\Components\Select::make('branch_id')
+                    ->label('Sucursal')
                     ->required()
-                    ->numeric(),
+                    ->relationship('branch', 'name')
+                    ->live()
+                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('name', Branch::find($state)?->name)),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
@@ -45,7 +50,10 @@ class CashBoxResource extends Resource
                     ->required()
                     ->numeric()
                     ->default(0.00),
-                Forms\Components\TextInput::make('status')
+                Forms\Components\Toggle::make('status')
+                    ->label('Estado')
+                    ->onColor('success')
+                    ->offColor('danger')
                     ->required(),
             ]);
     }

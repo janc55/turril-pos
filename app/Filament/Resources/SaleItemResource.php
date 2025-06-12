@@ -7,8 +7,11 @@ use App\Filament\Resources\SaleItemResource\RelationManagers;
 use App\Models\SaleItem;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -29,28 +32,49 @@ class SaleItemResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('sale_id')
+                Forms\Components\Select::make('sale_id')
+                    ->label('Venta')
                     ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('product_id')
+                    ->relationship('sale', 'id'),
+                Forms\Components\Select::make('product_id')
+                    ->label('Producto')
                     ->required()
-                    ->numeric(),
+                    ->relationship('product', 'name'),
                 Forms\Components\TextInput::make('quantity')
+                    ->label('Cantidad')    
                     ->required()
                     ->numeric(),
                 Forms\Components\TextInput::make('unit_price')
+                    ->label('Precio Unitario')
                     ->required()
-                    ->numeric(),
+                    ->prefix('Bs.')
+                    ->numeric()
+                    ->live()
+                    ->afterStateUpdated(function (Set $set, $state, Get $get) {
+                        $quantity = floatval($get('quantity'));
+                        $unitPrice = floatval($state);
+                        $set('subtotal', max($quantity * $unitPrice, 0));
+                    }),
                 Forms\Components\TextInput::make('subtotal')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->default(0.00)
+                    ->disabled(),
                 Forms\Components\TextInput::make('discount')
                     ->required()
                     ->numeric()
-                    ->default(0.00),
+                    ->default(0.00)
+                    ->live()
+                    ->afterStateUpdated(function (Set $set, $state, Get $get) {
+                        $subtotal = floatval($get('subtotal'));
+                        $discount = floatval($state);
+                        $set('total', max($subtotal - $discount, 0));
+                    }),
                 Forms\Components\TextInput::make('total')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->default(0.00)
+                    ->disabled(),
             ]);
     }
 
@@ -61,24 +85,31 @@ class SaleItemResource extends Resource
                 Tables\Columns\TextColumn::make('sale_id')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('product_id')
+                Tables\Columns\TextColumn::make('product.name')
+                    ->label('Producto')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('quantity')
+                    ->label('Cantidad')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('unit_price')
-                    ->numeric()
+                    ->label('Precio Unitario')
+                    ->money('Bs.')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('subtotal')
-                    ->numeric()
+                    ->label('Subtotal')
+                    ->money('Bs.')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('discount')
-                    ->numeric()
+                    ->label('Descuento')
+                    ->money('Bs.')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total')
-                    ->numeric()
-                    ->sortable(),
+                    ->label('Total')
+                    ->money('Bs.')
+                    ->sortable()
+                    ->summarize(Sum::make()->label('Total')->money('BOB')),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

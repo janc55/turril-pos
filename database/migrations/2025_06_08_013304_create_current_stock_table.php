@@ -20,7 +20,8 @@ return new class extends Migration
             $table->timestamp('updated_at')->useCurrent(); // Solo updated_at, se actualiza en cada cambio
 
             // Asegura que solo haya una entrada por ítem y sucursal
-            $table->unique(['branch_id', 'product_id', 'ingredient_id'], 'unique_item_branch_stock');
+            $table->unique(['branch_id', 'product_id']);
+            $table->unique(['branch_id', 'ingredient_id']);
         });
     }
 

@@ -29,18 +29,28 @@ class CashMovementResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('cash_box_id')
+                Forms\Components\Select::make('cash_box_id')
+                    ->label('Caja')
                     ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('type')
+                    ->relationship('cashBox', 'name'),
+                Forms\Components\Select::make('type')
+                    ->label('Tipo de movimiento')
+                    ->options([
+                        'deposit' => 'Depósito',
+                        'withdrawal' => 'Retiro',
+                        'sale_income' => 'Ingreso por venta',
+                        'purchase_payment' => 'Pago de compra',
+                        'other_income' => 'Otro ingreso',
+                        'other_expense' => 'Otro gasto',
+                    ])
                     ->required(),
                 Forms\Components\TextInput::make('amount')
+                    ->label('Monto')
                     ->required()
+                    ->prefix('Bs.')
                     ->numeric(),
                 Forms\Components\Textarea::make('description')
+                    ->label('Descripción')
                     ->columnSpanFull(),
                 Forms\Components\TextInput::make('related_sale_id')
                     ->numeric(),
@@ -53,21 +63,50 @@ class CashMovementResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('cash_box_id')
+                Tables\Columns\TextColumn::make('cashBox.name')
+                    ->label('Caja')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user_id')
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Usuario')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('type'),
+                Tables\Columns\TextColumn::make('type')
+                    ->label('Tipo de movimiento')
+                    ->badge(function ($state) {
+                        return match ($state) {
+                            'deposit' => 'Depósito',
+                            'withdrawal' => 'Retiro',
+                            'sale_income' => 'Ingreso por venta',
+                            'purchase_payment' => 'Pago de compra',
+                            'other_income' => 'Otro ingreso',
+                            'other_expense' => 'Otro gasto',
+                        };
+                    })
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('amount')
-                    ->numeric()
+                    ->label('Monto')
+                    ->money('Bs.')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('related_sale_id')
-                    ->numeric()
+                Tables\Columns\IconColumn::make('related_sale_id')
+                    ->label('Venta relacionada')
+                    ->icon(fn (string $state): string => match ($state) {
+                        '1' => 'heroicon-o-arrow-up-circle',
+                    })
+                    ->color(fn (string $state): string => match ($state) {
+                        '1' => 'success',
+                        default => 'gray',
+                    })
                     ->sortable(),
-                Tables\Columns\TextColumn::make('related_purchase_id')
-                    ->numeric()
+                Tables\Columns\IconColumn::make('related_purchase_id')
+                    ->label('Compra relacionada')
+                    ->icon(fn (string $state): string => match ($state) {
+                        '1' => 'heroicon-o-arrow-down-circle',
+                    })
+                    ->color(fn (string $state): string => match ($state) {
+                        '1' => 'danger',
+                        default => 'gray',
+                    })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

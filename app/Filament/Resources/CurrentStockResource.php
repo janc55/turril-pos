@@ -35,10 +35,12 @@ class CurrentStockResource extends Resource
                     ->relationship('branch', 'name'),
                 Forms\Components\Select::make('product_id')
                     ->label('Producto')
-                    ->relationship('product', 'name'),
+                    ->relationship('product', 'name')
+                    ->unique(ignoreRecord: true, column: 'product_id'),
                 Forms\Components\Select::make('ingredient_id')
                     ->label('Ingrediente')
-                    ->relationship('ingredient', 'name'),
+                    ->relationship('ingredient', 'name')
+                    ->unique(ignoreRecord: true, column: 'ingredient_id'),
                 Forms\Components\TextInput::make('quantity')
                     ->label('Cantidad')
                     ->required()

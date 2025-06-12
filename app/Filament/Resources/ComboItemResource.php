@@ -70,22 +70,17 @@ class ComboItemResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('combo_product_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('comboProduct.name')
+                    ->label('Combo')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('product_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('product.name')
+                    ->label('Producto')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('quantity')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('min_choices')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('max_choices')
-                    ->numeric()
+                    ->label('Cantidad')
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_customizable')
+                    ->label('Personalizable')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
