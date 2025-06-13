@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             RolesAndUsersSeeder::class,    // Crea roles y el usuario admin
             IngredientsSeeder::class,      // Crea todos los ingredientes y subproductos
             ProductsAndRecipesSeeder::class, // Crea productos y sus recetas (depende de Ingredients)
+            SpatiePermissionsSeeder::class, // Crea permisos y asigna roles a usuarios
             // Aquí puedes añadir más seeders en el futuro, como ComboItemsSeeder
         ]);
     }

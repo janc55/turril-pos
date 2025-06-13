@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Branch;
-use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -16,17 +15,12 @@ class RolesAndUsersSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Crear Roles
-        $adminRole = Role::firstOrCreate(['name' => 'Administrador'], ['description' => 'Control total del sistema']);
-        $managerRole = Role::firstOrCreate(['name' => 'Gerente'], ['description' => 'Gestión de sucursales y personal']);
-        $cashierRole = Role::firstOrCreate(['name' => 'Cajero'], ['description' => 'Manejo de punto de venta y caja']);
-        $warehouseRole = Role::firstOrCreate(['name' => 'Almacenero'], ['description' => 'Gestión de inventario y movimientos de stock']);
-
-        // Asegúrate de que las sucursales existan o corre BranchesSeeder primero
+        // Asegúrate de que las sucursales existan.
+        // Si BranchesSeeder se ejecuta antes en DatabaseSeeder, esto ya debería estar listo.
         $centralBranch = Branch::firstOrCreate(['name' => 'Oficina Central / Almacén Mayor']);
-        $pradoBranch = Branch::firstOrCreate(['name' => 'Sucursal El Prado']);
+        $pradoBranch = Branch::firstOrCreate(['name' => 'Sucursal Ayacucho']);
 
-        // 2. Crear Usuarios y Asignar Roles
+        // 1. Crear Usuarios
         // Usuario Admin
         $adminUser = User::firstOrCreate(
             ['email' => 'josenegretti@gmail.com'],
@@ -38,7 +32,8 @@ class RolesAndUsersSeeder extends Seeder
                 'active' => true,
             ]
         );
-        $adminUser->roles()->syncWithoutDetaching([$adminRole->id]);
+        // NOTA: La asignación del rol 'Administrador' (de Spatie) para este usuario
+        // se hará en el SpatiePermissionsSeeder, NO AQUÍ.
 
         // Ejemplo de Gerente
         $managerUser = User::firstOrCreate(
@@ -51,7 +46,8 @@ class RolesAndUsersSeeder extends Seeder
                 'active' => true,
             ]
         );
-        $managerUser->roles()->syncWithoutDetaching([$managerRole->id]);
+        // NOTA: La asignación del rol 'Gerente' (de Spatie) para este usuario
+        // se hará en el SpatiePermissionsSeeder, NO AQUÍ.
 
         // Ejemplo de Cajero
         $cashierUser = User::firstOrCreate(
@@ -64,7 +60,11 @@ class RolesAndUsersSeeder extends Seeder
                 'active' => true,
             ]
         );
-        $cashierUser->roles()->syncWithoutDetaching([$cashierRole->id]);
-    
+        // NOTA: La asignación del rol 'Cajero' (de Spatie) para este usuario
+        // se hará en el SpatiePermissionsSeeder, NO AQUÍ.
+
+        // Hemos eliminado:
+        // - Las líneas de `Role::firstOrCreate`
+        // - Las líneas de `$user->roles()->syncWithoutDetaching()`
     }
 }

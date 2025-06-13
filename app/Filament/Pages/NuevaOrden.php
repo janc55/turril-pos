@@ -37,6 +37,12 @@ class NuevaOrden extends Page
     // Opcional: Propiedades para filtrar el menú
     public $selectedProductType = null; // 'sandwich', 'drink', etc.
 
+    public static function canAccess(): bool
+    {
+        // Verificar si el usuario tiene permiso para acceder a esta página
+        return Auth::check() && Auth::user()->can('access_pos_page');
+    }
+
     public function mount(): void
     {
         // Cargar productos del menú al iniciar la página

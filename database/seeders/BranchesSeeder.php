@@ -16,17 +16,17 @@ class BranchesSeeder extends Seeder
         Branch::create([
             'name' => 'Oficina Central / Almacén Mayor',
             'address' => 'Dirección Central S/N',
-            'phone' => '12345678',
+            'phone' => '72487697',
             'email' => 'central@turril.com',
             'description' => 'Sucursal virtual para compras centralizadas y gestión de stock principal.',
             'active' => true,
         ]);
 
         Branch::create([
-            'name' => 'Sucursal El Prado',
-            'address' => 'Av. 16 de Julio #123',
+            'name' => 'Sucursal Ayacuho',
+            'address' => 'Ayacucho entre 6 de octubre y Soria Galvarro',
             'phone' => '23456789',
-            'email' => 'prado@turril.com',
+            'email' => 'ayacucho@turril.com',
             'description' => 'Sucursal principal en la zona céntrica.',
             'active' => true,
         ]);
