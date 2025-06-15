@@ -13,7 +13,7 @@ class PurchaseItemPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->hasPermissionTo('view_any_purchase');
     }
 
     /**
@@ -21,7 +21,7 @@ class PurchaseItemPolicy
      */
     public function view(User $user, PurchaseItem $purchaseItem): bool
     {
-        return false;
+        return $user->hasPermissionTo('view_purchase');
     }
 
     /**
@@ -29,7 +29,7 @@ class PurchaseItemPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasPermissionTo('create_purchase');
     }
 
     /**
@@ -37,7 +37,7 @@ class PurchaseItemPolicy
      */
     public function update(User $user, PurchaseItem $purchaseItem): bool
     {
-        return false;
+        return $user->hasPermissionTo('update_purchase');
     }
 
     /**
@@ -45,7 +45,7 @@ class PurchaseItemPolicy
      */
     public function delete(User $user, PurchaseItem $purchaseItem): bool
     {
-        return false;
+        return $user->hasPermissionTo('delete_purchase');
     }
 
     /**

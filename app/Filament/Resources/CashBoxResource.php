@@ -62,18 +62,22 @@ class CashBoxResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('branch_id')
+                Tables\Columns\TextColumn::make('branch.name')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('initial_balance')
-                    ->numeric()
+                    ->label('Saldo Inicial')
+                    ->money('Bs.')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('current_balance')
-                    ->numeric()
+                    ->label('Saldo Actual')
+                    ->money('Bs.')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status'),
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Estado')
+                    ->badge(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

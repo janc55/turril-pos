@@ -13,7 +13,7 @@ class ComboItemPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->hasPermissionTo('view_any_combo_item');
     }
 
     /**
@@ -21,7 +21,7 @@ class ComboItemPolicy
      */
     public function view(User $user, ComboItem $comboItem): bool
     {
-        return false;
+        return $user->hasPermissionTo('view_combo_item');
     }
 
     /**
@@ -29,7 +29,7 @@ class ComboItemPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasPermissionTo('create_combo_item');
     }
 
     /**
@@ -37,7 +37,7 @@ class ComboItemPolicy
      */
     public function update(User $user, ComboItem $comboItem): bool
     {
-        return false;
+        return $user->hasPermissionTo('update_combo_item');
     }
 
     /**
@@ -45,7 +45,7 @@ class ComboItemPolicy
      */
     public function delete(User $user, ComboItem $comboItem): bool
     {
-        return false;
+        return $user->hasPermissionTo('delete_combo_item');
     }
 
     /**

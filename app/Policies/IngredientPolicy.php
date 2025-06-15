@@ -13,7 +13,7 @@ class IngredientPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->hasPermissionTo('view_any_ingredient');
     }
 
     /**
@@ -21,7 +21,7 @@ class IngredientPolicy
      */
     public function view(User $user, Ingredient $ingredient): bool
     {
-        return false;
+        return $user->hasPermissionTo('view_ingredient');
     }
 
     /**
@@ -29,7 +29,7 @@ class IngredientPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasPermissionTo('create_ingredient');
     }
 
     /**
@@ -37,7 +37,7 @@ class IngredientPolicy
      */
     public function update(User $user, Ingredient $ingredient): bool
     {
-        return false;
+        return $user->hasPermissionTo('update_ingredient');
     }
 
     /**
@@ -45,7 +45,7 @@ class IngredientPolicy
      */
     public function delete(User $user, Ingredient $ingredient): bool
     {
-        return false;
+        return $user->hasPermissionTo('delete_ingredient');
     }
 
     /**

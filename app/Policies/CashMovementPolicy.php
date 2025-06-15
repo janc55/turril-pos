@@ -13,7 +13,7 @@ class CashMovementPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->hasPermissionTo('view_any_cash_movement');
     }
 
     /**
@@ -21,7 +21,7 @@ class CashMovementPolicy
      */
     public function view(User $user, CashMovement $cashMovement): bool
     {
-        return false;
+        return $user->hasPermissionTo('view_cash_movement');
     }
 
     /**
@@ -29,7 +29,7 @@ class CashMovementPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasPermissionTo('create_cash_movement');
     }
 
     /**
@@ -37,7 +37,7 @@ class CashMovementPolicy
      */
     public function update(User $user, CashMovement $cashMovement): bool
     {
-        return false;
+        return $user->hasPermissionTo('update_cash_movement');
     }
 
     /**
@@ -45,7 +45,7 @@ class CashMovementPolicy
      */
     public function delete(User $user, CashMovement $cashMovement): bool
     {
-        return false;
+        return $user->hasPermissionTo('delete_cash_movement');
     }
 
     /**

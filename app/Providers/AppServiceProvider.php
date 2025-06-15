@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\CashMovement;
 use App\Models\StockMovement;
+use App\Observers\CashMovementObserver;
 use App\Observers\StockMovementObserver;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,5 +24,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         StockMovement::observe(StockMovementObserver::class);
+        CashMovement::observe(CashMovementObserver::class);
     }
 }

@@ -8,7 +8,6 @@
         "build:filament": "npx tailwindcss -c tailwind3.config.js -i ./resources/css/filament-tailwind3.css -o public/css/filament-tailwind3.css --minify"
     },
     "devDependencies": {
-        "@tailwindcss/vite": "^4.0.0",
         "axios": "^1.8.2",
         "concurrently": "^9.0.1",
         "laravel-vite-plugin": "^1.2.0",

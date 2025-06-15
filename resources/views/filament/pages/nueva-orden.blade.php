@@ -5,8 +5,13 @@
             {{-- Encabezado del POS --}}
             <div class="flex justify-between items-center mb-6">
                 <h1 class="text-3xl font-bold text-gray-900 dark:text-white">EL TURRIL POS</h1>
-                <div class="text-2xl font-bold text-orange-600 dark:text-orange-400">
-                    {{ number_format($currentCashBoxBalance, 2) }} Bs.
+                <div class="flex gap-6 items-center">
+                    <div class="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                        Caja: {{ number_format($currentCashBoxBalance, 2) }} Bs.
+                    </div>
+                    <div class="text-2xl font-bold text-green-600 dark:text-green-400">
+                        Ventas del día: {{ number_format($todaySalesTotal, 2) }} Bs.
+                    </div>
                 </div>
             </div>
 

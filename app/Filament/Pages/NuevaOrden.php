@@ -33,6 +33,8 @@ class NuevaOrden extends Page
     public $total = 0; // Total del carrito
     public $currentCashBoxBalance = 0; // Balance actual de la caja
     public $paymentMethod = 'Efectivo'; // Método de pago por defecto
+    public $todaySalesTotal = 0;
+
 
     // Opcional: Propiedades para filtrar el menú
     public $selectedProductType = null; // 'sandwich', 'drink', etc.
@@ -48,6 +50,7 @@ class NuevaOrden extends Page
         // Cargar productos del menú al iniciar la página
         $this->loadMenuProducts();
         $this->loadCashBoxBalance();
+        $this->loadTodaySalesTotal();
     }
 
     protected function loadMenuProducts(): void
@@ -74,6 +77,17 @@ class NuevaOrden extends Page
                                ->first();
             $this->currentCashBoxBalance = $cashBox ? $cashBox->current_balance : 0;
         }
+    }
+
+    protected function loadTodaySalesTotal(): void
+    {
+        $userBranchId = Auth::user()->branch_id;
+
+        // Ventas de hoy para esta sucursal (ajusta según tu modelo)
+        $this->todaySalesTotal = \App\Models\Sale::where('branch_id', $userBranchId)
+            ->whereDate('created_at', today())
+            ->where('status', 'completed')
+            ->sum('final_amount');
     }
 
     public function addToCart(int $productId, string $productName, float $productPrice): void
@@ -330,6 +344,8 @@ class NuevaOrden extends Page
 
             DB::commit();
 
+            $this->loadTodaySalesTotal();
+
             Notification::make()
                 ->title('Pedido realizado con éxito!')
                 ->success()
@@ -337,7 +353,8 @@ class NuevaOrden extends Page
 
             $this->cart = [];
             $this->total = 0;
-            // $this->loadCashBoxBalance(); // Esta función probablemente depende de current_balance, ya se actualizará por el observer.
+            $this->loadTodaySalesTotal();
+            $this->loadCashBoxBalance(); // Esta función probablemente depende de current_balance, ya se actualizará por el observer.
                                         // Si la necesitas para refrescar la vista, asegúrate que lea el valor de la base de datos.
 
         } catch (\Exception $e) {

@@ -13,7 +13,7 @@ class CurrentStockPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->hasPermissionTo('view_any_current_stock');
     }
 
     /**
@@ -21,7 +21,7 @@ class CurrentStockPolicy
      */
     public function view(User $user, CurrentStock $currentStock): bool
     {
-        return false;
+        return $user->hasPermissionTo('view_current_stock');
     }
 
     /**
@@ -29,7 +29,7 @@ class CurrentStockPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasPermissionTo('create_current_stock');
     }
 
     /**
@@ -37,7 +37,7 @@ class CurrentStockPolicy
      */
     public function update(User $user, CurrentStock $currentStock): bool
     {
-        return false;
+        return $user->hasPermissionTo('update_current_stock');
     }
 
     /**
@@ -45,7 +45,7 @@ class CurrentStockPolicy
      */
     public function delete(User $user, CurrentStock $currentStock): bool
     {
-        return false;
+        return $user->hasPermissionTo('delete_current_stock');
     }
 
     /**

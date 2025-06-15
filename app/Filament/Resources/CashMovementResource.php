@@ -90,13 +90,8 @@ class CashMovementResource extends Resource
                     ->sortable(),
                 Tables\Columns\IconColumn::make('related_sale_id')
                     ->label('Venta relacionada')
-                    ->icon(fn (string $state): string => match ($state) {
-                        '1' => 'heroicon-o-arrow-up-circle',
-                    })
-                    ->color(fn (string $state): string => match ($state) {
-                        '1' => 'success',
-                        default => 'gray',
-                    })
+                    ->icon('heroicon-o-arrow-up-circle')
+                    ->color('success')
                     ->sortable(),
                 Tables\Columns\IconColumn::make('related_purchase_id')
                     ->label('Compra relacionada')
