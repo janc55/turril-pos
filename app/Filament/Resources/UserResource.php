@@ -6,12 +6,14 @@ use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Hash;
 
 class UserResource extends Resource
 {
@@ -35,12 +37,23 @@ class UserResource extends Resource
                 Forms\Components\DateTimePicker::make('email_verified_at'),
                 Forms\Components\TextInput::make('password')
                     ->password()
+                    ->maxLength(255)
+                    ->dehydrateStateUsing(fn ($state) => Hash::make($state))
+                    ->dehydrated(fn ($state) => filled($state))
+                    ->required(fn (string $context): bool => $context === 'create'),
+                Forms\Components\Select::make('branch_id')
+                    ->label('Sucursal')
+                    ->relationship('branch', 'name')
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('branch_id')
-                    ->numeric(),
+                    ->preload(),
                 Forms\Components\Toggle::make('active')
                     ->required(),
+                // Aquí añadimos el select múltiple de roles
+                Select::make('roles')            
+                    ->label('Roles')
+                    ->multiple()              // permite asignar varios
+                    ->relationship('roles', 'name')  
+                    ->preload(),
             ]);
     }
 
@@ -55,6 +68,8 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('roles.name')
+                    ->label('Roles'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -63,8 +78,8 @@ class UserResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('branch_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('branch.name')
+                    ->label('Sucursal')
                     ->sortable(),
                 Tables\Columns\IconColumn::make('active')
                     ->boolean(),

@@ -4,8 +4,10 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\RoleResource\Pages;
 use App\Filament\Resources\RoleResource\RelationManagers;
-use App\Models\Role;
+use Spatie\Permission\Models\Role;
 use Filament\Forms;
+use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -28,8 +30,16 @@ class RoleResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Textarea::make('description')
-                    ->columnSpanFull(),
+                
+                Section::make('Permisos')
+                    ->description('Selecciona los permisos que deseas asignar a este rol.')
+                    ->schema([
+                        CheckboxList::make('permissions')
+                            ->label('Permisos')
+                            ->relationship('permissions', 'name')
+                            ->columns(3)
+                            ->bulkToggleable(),
+                    ]),
             ]);
     }
 

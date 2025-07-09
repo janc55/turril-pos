@@ -21,7 +21,7 @@ class PurchaseResource extends Resource
 {
     protected static ?string $model = Purchase::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
 
     protected static ?string $modelLabel = 'Compra';
 
@@ -47,11 +47,6 @@ class PurchaseResource extends Resource
                             ->email(),
                     ])
                     ->required(),
-                Forms\Components\TextInput::make('total_amount')
-                    ->label('Monto Total')
-                    ->disabled()
-                    ->prefix('Bs.')
-                    ->numeric(),
                 Forms\Components\ToggleButtons::make('payment_status')
                     ->label('Estado de Pago')
                     ->options([

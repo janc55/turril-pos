@@ -17,7 +17,7 @@ class CurrentStockResource extends Resource
 {
     protected static ?string $model = CurrentStock::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-presentation-chart-bar';
 
     protected static ?string $modelLabel = 'Stock Actual';
 

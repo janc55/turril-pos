@@ -17,7 +17,7 @@ class CashMovementResource extends Resource
 {
     protected static ?string $model = CashMovement::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-arrows-up-down';
 
     protected static ?string $modelLabel = 'Movimientos de Caja';
 

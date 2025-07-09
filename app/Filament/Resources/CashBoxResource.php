@@ -19,7 +19,7 @@ class CashBoxResource extends Resource
 {
     protected static ?string $model = CashBox::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-computer-desktop';
 
     protected static ?string $modelLabel = 'Caja';
 

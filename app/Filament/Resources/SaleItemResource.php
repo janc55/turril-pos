@@ -20,7 +20,7 @@ class SaleItemResource extends Resource
 {
     protected static ?string $model = SaleItem::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-wallet';
 
     protected static ?string $modelLabel = 'Venta de Artículo';
 

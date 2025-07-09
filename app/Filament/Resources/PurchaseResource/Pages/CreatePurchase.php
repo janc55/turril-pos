@@ -16,21 +16,20 @@ class CreatePurchase extends CreateRecord
          // Asigna el user_id actual
         $data['user_id'] = Auth::id();
 
+        $data['total_amount'] = 0;
+
         return $data;
     }
 
     protected function afterCreate(): void
     {
-        $purchase = $this->record;
-
-        $total = 0;
-        if ($purchase->purchaseItems && is_iterable($purchase->purchaseItems)) {
-            foreach ($purchase->purchaseItems as $item) {
-                $total += (float) ($item->subtotal ?? 0);
-            }
-        }
-        $purchase->total_amount = round($total, 2);
-        $purchase->save();
+         $purchase = $this->record->fresh(); // Asegúrate de tener los items cargados
+    
+        $total = $purchase->purchaseItems->sum('subtotal');
+        
+        $purchase->update([
+            'total_amount' => round($total, 2)
+        ]);
     }
 
 }
