@@ -382,13 +382,15 @@ class NuevaOrden extends Page
     public function printReceipt()
     {
         // Redirige a la ruta que genera el PDF del recibo
-        return redirect()->to(route('pos.receipt', ['saleId' => $this->lastSaleId]));
+        Log::info('printTicket llamado', ['saleId' => $this->lastSaleId]);  // Opcional: para depurar
+        return redirect()->route('pos.ticket', ['saleId' => $this->lastSaleId]);
     }
 
     public function printTicket()
     {
         // Redirige a la ruta que genera el PDF de la comanda
-        return redirect()->to(route('pos.ticket', ['saleId' => $this->lastSaleId]));
+        Log::info('printReceipt llamado', ['saleId' => $this->lastSaleId]);  // Opcional
+        return redirect()->route('pos.receipt', ['saleId' => $this->lastSaleId]);
     }
 
    
