@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Log;
 
 class NuevaOrden extends Page
 {
+    
     protected static ?string $navigationIcon = 'heroicon-o-shopping-cart'; // Icono para el sidebar
 
     protected static ?string $modelLabel = 'Nueva Orden';
@@ -34,6 +35,8 @@ class NuevaOrden extends Page
     public $currentCashBoxBalance = 0; // Balance actual de la caja
     public $paymentMethod = 'Efectivo'; // Método de pago por defecto
     public $todaySalesTotal = 0;
+
+    public int|null $lastSaleId = null; // Para almacenar el ID de la última venta realizada
 
 
     // Opcional: Propiedades para filtrar el menú
@@ -195,6 +198,8 @@ class NuevaOrden extends Page
                 'notes' => 'Venta desde POS',
             ]);
 
+            $this->lastSaleId = $sale->id; // Guarda el id para redirección o renderizado del ticket
+
             // 2. Agregar ítems a la Venta y Registrar Movimientos de Stock
             foreach ($this->cart as $item) {
                 SaleItem::create([
@@ -345,17 +350,18 @@ class NuevaOrden extends Page
             DB::commit();
 
             $this->loadTodaySalesTotal();
+            $this->loadCashBoxBalance();
 
             Notification::make()
                 ->title('Pedido realizado con éxito!')
                 ->success()
                 ->send();
 
+            // Dispara el evento para abrir el modal
+            $this->dispatch('open-modal', id: 'order-placed');
+
             $this->cart = [];
             $this->total = 0;
-            $this->loadTodaySalesTotal();
-            $this->loadCashBoxBalance(); // Esta función probablemente depende de current_balance, ya se actualizará por el observer.
-                                        // Si la necesitas para refrescar la vista, asegúrate que lea el valor de la base de datos.
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -372,4 +378,18 @@ class NuevaOrden extends Page
         $this->selectedProductType = $type;
         $this->loadMenuProducts();
     }
+
+    public function printReceipt()
+    {
+        // Redirige a la ruta que genera el PDF del recibo
+        return redirect()->to(route('pos.receipt', ['saleId' => $this->lastSaleId]));
+    }
+
+    public function printTicket()
+    {
+        // Redirige a la ruta que genera el PDF de la comanda
+        return redirect()->to(route('pos.ticket', ['saleId' => $this->lastSaleId]));
+    }
+
+   
 }
