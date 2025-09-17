@@ -23,7 +23,7 @@ class BranchesSeeder extends Seeder
         ]);
 
         Branch::create([
-            'name' => 'Sucursal Ayacuho',
+            'name' => 'Sucursal Ayacucho',
             'address' => 'Ayacucho entre 6 de octubre y Soria Galvarro',
             'phone' => '23456789',
             'email' => 'ayacucho@turril.com',
