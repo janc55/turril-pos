@@ -2,11 +2,20 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\CurrentStockResource\Pages\ListCurrentStocks;
+use App\Filament\Resources\CurrentStockResource\Pages\CreateCurrentStock;
+use App\Filament\Resources\CurrentStockResource\Pages\EditCurrentStock;
 use App\Filament\Resources\CurrentStockResource\Pages;
 use App\Filament\Resources\CurrentStockResource\RelationManagers;
 use App\Models\CurrentStock;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,31 +26,31 @@ class CurrentStockResource extends Resource
 {
     protected static ?string $model = CurrentStock::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-presentation-chart-bar';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-presentation-chart-bar';
 
     protected static ?string $modelLabel = 'Stock Actual';
 
     protected static ?string $navigationLabel = 'Stocks Actuales';
 
-    protected static ?string $navigationGroup = 'Inventario';
+    protected static string | \UnitEnum | null $navigationGroup = 'Inventario';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('branch_id')
+        return $schema
+            ->components([
+                Select::make('branch_id')
                     ->label('Sucursal')
                     ->required()
                     ->relationship('branch', 'name'),
-                Forms\Components\Select::make('product_id')
+                Select::make('product_id')
                     ->label('Producto')
                     ->relationship('product', 'name')
                     ->unique(ignoreRecord: true, column: 'product_id'),
-                Forms\Components\Select::make('ingredient_id')
+                Select::make('ingredient_id')
                     ->label('Ingrediente')
                     ->relationship('ingredient', 'name')
                     ->unique(ignoreRecord: true, column: 'ingredient_id'),
-                Forms\Components\TextInput::make('quantity')
+                TextInput::make('quantity')
                     ->label('Cantidad')
                     ->required()
                     ->numeric(),
@@ -52,23 +61,23 @@ class CurrentStockResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('branch.name')
+                TextColumn::make('branch.name')
                     ->label('Sucursal')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('product.name')
+                TextColumn::make('product.name')
                     ->label('Producto')    
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('ingredient.name')
+                TextColumn::make('ingredient.name')
                     ->label('Ingrediente')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('quantity')
+                TextColumn::make('quantity')
                     ->label('Cantidad')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -76,12 +85,12 @@ class CurrentStockResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -96,9 +105,9 @@ class CurrentStockResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCurrentStocks::route('/'),
-            'create' => Pages\CreateCurrentStock::route('/create'),
-            'edit' => Pages\EditCurrentStock::route('/{record}/edit'),
+            'index' => ListCurrentStocks::route('/'),
+            'create' => CreateCurrentStock::route('/create'),
+            'edit' => EditCurrentStock::route('/{record}/edit'),
         ];
     }
 }

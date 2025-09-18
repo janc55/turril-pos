@@ -2,11 +2,21 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\IngredientResource\Pages\ListIngredients;
+use App\Filament\Resources\IngredientResource\Pages\CreateIngredient;
+use App\Filament\Resources\IngredientResource\Pages\EditIngredient;
 use App\Filament\Resources\IngredientResource\Pages;
 use App\Filament\Resources\IngredientResource\RelationManagers;
 use App\Models\Ingredient;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,26 +27,26 @@ class IngredientResource extends Resource
 {
     protected static ?string $model = Ingredient::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-group';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-group';
 
     protected static ?string $modelLabel = 'Ingrediente';
 
     protected static ?string $navigationLabel = 'Ingredientes';
 
-    protected static ?string $navigationGroup = 'Inventario';
+    protected static string | \UnitEnum | null $navigationGroup = 'Inventario';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->label('Nombre')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Textarea::make('description')
+                Textarea::make('description')
                     ->label('Descripción')
                     ->columnSpanFull(),
-                Forms\Components\Select::make('unit')
+                Select::make('unit')
                     ->label('Unidad')
                     ->options([
                         'gramos' => 'Gramos (gr)',
@@ -47,7 +57,7 @@ class IngredientResource extends Resource
                         'litros' => 'Litros (L)',
                     ])
                     ->required(),
-                Forms\Components\TextInput::make('cost_per_unit')
+                TextInput::make('cost_per_unit')
                     ->label('Costo por Unidad')
                     ->prefix('Bs.')
                     ->numeric(),
@@ -58,21 +68,21 @@ class IngredientResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('unit')
+                TextColumn::make('unit')
                     ->label('Unidad')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('cost_per_unit')
+                TextColumn::make('cost_per_unit')
                     ->label('Costo por Unidad')
                     ->money('BOB')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -80,12 +90,12 @@ class IngredientResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -100,9 +110,9 @@ class IngredientResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListIngredients::route('/'),
-            'create' => Pages\CreateIngredient::route('/create'),
-            'edit' => Pages\EditIngredient::route('/{record}/edit'),
+            'index' => ListIngredients::route('/'),
+            'create' => CreateIngredient::route('/create'),
+            'edit' => EditIngredient::route('/{record}/edit'),
         ];
     }
 }

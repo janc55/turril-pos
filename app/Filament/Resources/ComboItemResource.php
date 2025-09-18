@@ -2,12 +2,23 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\ComboItemResource\Pages\ListComboItems;
+use App\Filament\Resources\ComboItemResource\Pages\CreateComboItem;
+use App\Filament\Resources\ComboItemResource\Pages\EditComboItem;
 use App\Filament\Resources\ComboItemResource\Pages;
 use App\Filament\Resources\ComboItemResource\RelationManagers;
 use App\Models\ComboItem;
 use App\Models\Product;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -18,7 +29,7 @@ class ComboItemResource extends Resource
 {
     protected static ?string $model = ComboItem::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $modelLabel = 'Combo';
 
@@ -26,41 +37,41 @@ class ComboItemResource extends Resource
 
     protected static ?string $navigationParentItem = 'Productos';
 
-    protected static ?string $navigationGroup = 'Inventario';
+    protected static string | \UnitEnum | null $navigationGroup = 'Inventario';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('combo_product_id')
+        return $schema
+            ->components([
+                Select::make('combo_product_id')
                     ->label('Combo')
                     ->options(
                         Product::where('type', '=', 'combo') // Filtra para excluir productos que son combos
                             ->pluck('name', 'id')
                     )
                     ->required(),
-                Forms\Components\Select::make('product_id')
+                Select::make('product_id')
                     ->options(
                         Product::where('type', '!=', 'combo') // Filtra para excluir productos que son combos
                             ->pluck('name', 'id')
                     )
                     ->required()
                     ->label('Producto'),
-                Forms\Components\TextInput::make('quantity')
+                TextInput::make('quantity')
                     ->label('Cantidad')    
                     ->required()
                     ->numeric(),
-                Forms\Components\TextInput::make('min_choices')
+                TextInput::make('min_choices')
                     ->label('Mínimo de opciones')
                     ->required()
                     ->numeric()
                     ->default(1),
-                Forms\Components\TextInput::make('max_choices')
+                TextInput::make('max_choices')
                     ->label('Máximo de opciones')
                     ->required()
                     ->numeric()
                     ->default(1),
-                Forms\Components\Toggle::make('is_customizable')
+                Toggle::make('is_customizable')
                     ->label('Personalizable')
                     ->required(),
             ]);
@@ -70,23 +81,23 @@ class ComboItemResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('comboProduct.name')
+                TextColumn::make('comboProduct.name')
                     ->label('Combo')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('product.name')
+                TextColumn::make('product.name')
                     ->label('Producto')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('quantity')
+                TextColumn::make('quantity')
                     ->label('Cantidad')
                     ->sortable(),
-                Tables\Columns\IconColumn::make('is_customizable')
+                IconColumn::make('is_customizable')
                     ->label('Personalizable')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -94,12 +105,12 @@ class ComboItemResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -114,9 +125,9 @@ class ComboItemResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListComboItems::route('/'),
-            'create' => Pages\CreateComboItem::route('/create'),
-            'edit' => Pages\EditComboItem::route('/{record}/edit'),
+            'index' => ListComboItems::route('/'),
+            'create' => CreateComboItem::route('/create'),
+            'edit' => EditComboItem::route('/{record}/edit'),
         ];
     }
 }

@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\CashMovement;
 use App\Models\CashBox; // Asegúrate de importar tu modelo CashBox
+use App\Models\Sale;
 
 class CashMovementObserver
 {
@@ -34,6 +35,22 @@ class CashMovementObserver
      */
     private function updateCashBoxBalance(CashMovement $cashMovement, string $operation): void
     {
+        
+        // Si el movimiento es ingreso por venta y está vinculado a una venta...
+        if (
+            $cashMovement->type === 'sale_income'
+            && $cashMovement->related_sale_id
+        ) {
+            $sale = Sale::find($cashMovement->related_sale_id);
+
+            // Si no existe la venta o el pago NO es en efectivo, no actualizar caja
+            if (!$sale || strtolower($sale->payment_method) !== 'efectivo') {
+                return;
+            }
+            // Si es efectivo, continúa el flujo normal...
+        }
+        
+        
         // Busca la caja asociada al movimiento.
         $cashBox = CashBox::find($cashMovement->cash_box_id);
 

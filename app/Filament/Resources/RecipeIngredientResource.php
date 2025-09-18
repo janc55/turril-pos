@@ -2,11 +2,19 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\RecipeIngredientResource\Pages\ListRecipeIngredients;
+use App\Filament\Resources\RecipeIngredientResource\Pages\CreateRecipeIngredient;
+use App\Filament\Resources\RecipeIngredientResource\Pages\EditRecipeIngredient;
 use App\Filament\Resources\RecipeIngredientResource\Pages;
 use App\Filament\Resources\RecipeIngredientResource\RelationManagers;
 use App\Models\RecipeIngredient;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,23 +25,23 @@ class RecipeIngredientResource extends Resource
 {
     protected static ?string $model = RecipeIngredient::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $navigationParentItem = 'Recetas';
 
-    protected static ?string $navigationGroup = 'Administración';
+    protected static string | \UnitEnum | null $navigationGroup = 'Administración';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('recipe_id')
+        return $schema
+            ->components([
+                TextInput::make('recipe_id')
                     ->required()
                     ->numeric(),
-                Forms\Components\TextInput::make('ingredient_id')
+                TextInput::make('ingredient_id')
                     ->required()
                     ->numeric(),
-                Forms\Components\TextInput::make('quantity')
+                TextInput::make('quantity')
                     ->required()
                     ->numeric(),
             ]);
@@ -43,20 +51,20 @@ class RecipeIngredientResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('recipe.product.name')
+                TextColumn::make('recipe.product.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('ingredient.name')
+                TextColumn::make('ingredient.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('quantity')
+                TextColumn::make('quantity')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -64,12 +72,12 @@ class RecipeIngredientResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -84,9 +92,9 @@ class RecipeIngredientResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListRecipeIngredients::route('/'),
-            'create' => Pages\CreateRecipeIngredient::route('/create'),
-            'edit' => Pages\EditRecipeIngredient::route('/{record}/edit'),
+            'index' => ListRecipeIngredients::route('/'),
+            'create' => CreateRecipeIngredient::route('/create'),
+            'edit' => EditRecipeIngredient::route('/{record}/edit'),
         ];
     }
 }

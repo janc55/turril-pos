@@ -2,13 +2,24 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\CashBoxResource\Pages\ListCashBoxes;
+use App\Filament\Resources\CashBoxResource\Pages\CreateCashBox;
+use App\Filament\Resources\CashBoxResource\Pages\EditCashBox;
 use App\Filament\Resources\CashBoxResource\Pages;
 use App\Filament\Resources\CashBoxResource\RelationManagers;
 use App\Models\Branch;
 use App\Models\CashBox;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -19,38 +30,39 @@ class CashBoxResource extends Resource
 {
     protected static ?string $model = CashBox::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-computer-desktop';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-computer-desktop';
 
     protected static ?string $modelLabel = 'Caja';
 
     protected static ?string $navigationLabel = 'Cajas';
 
-    protected static ?string $navigationGroup = 'Caja';
+    protected static string | \UnitEnum | null $navigationGroup = 'Caja';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('branch_id')
+        return $schema
+            ->components([
+                Select::make('branch_id')
                     ->label('Sucursal')
                     ->required()
                     ->relationship('branch', 'name')
                     ->live()
                     ->afterStateUpdated(fn (Set $set, ?string $state) => $set('name', Branch::find($state)?->name)),
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Textarea::make('description')
+                Textarea::make('description')
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('initial_balance')
+                TextInput::make('initial_balance')
                     ->required()
                     ->numeric()
+                    ->live()
+                    ->afterStateUpdated(fn (Set $set, ?float $state) => $set('current_balance', $state ?? 0.00))
                     ->default(0.00),
-                Forms\Components\TextInput::make('current_balance')
+                TextInput::make('current_balance')
                     ->required()
-                    ->numeric()
-                    ->default(0.00),
-                Forms\Components\Toggle::make('status')
+                    ->numeric(),
+                Toggle::make('status')
                     ->label('Estado')
                     ->onColor('success')
                     ->offColor('danger')
@@ -62,27 +74,27 @@ class CashBoxResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('branch.name')
+                TextColumn::make('branch.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('initial_balance')
+                TextColumn::make('initial_balance')
                     ->label('Saldo Inicial')
                     ->money('Bs.')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('current_balance')
+                TextColumn::make('current_balance')
                     ->label('Saldo Actual')
                     ->money('Bs.')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->label('Estado')
                     ->badge(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -90,12 +102,12 @@ class CashBoxResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -110,9 +122,9 @@ class CashBoxResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCashBoxes::route('/'),
-            'create' => Pages\CreateCashBox::route('/create'),
-            'edit' => Pages\EditCashBox::route('/{record}/edit'),
+            'index' => ListCashBoxes::route('/'),
+            'create' => CreateCashBox::route('/create'),
+            'edit' => EditCashBox::route('/{record}/edit'),
         ];
     }
 }

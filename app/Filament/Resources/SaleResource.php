@@ -2,13 +2,25 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\SaleResource\Pages\ListSales;
+use App\Filament\Resources\SaleResource\Pages\CreateSale;
+use App\Filament\Resources\SaleResource\Pages\EditSale;
 use App\Filament\Resources\SaleResource\Pages;
 use App\Filament\Resources\SaleResource\RelationManagers;
 use App\Models\Sale;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -19,23 +31,23 @@ class SaleResource extends Resource
 {
     protected static ?string $model = Sale::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-tag';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-tag';
 
     protected static ?string $modelLabel = 'Venta';
 
     protected static ?string $navigationLabel = 'Ventas';
 
-    protected static ?string $navigationGroup = 'Ventas';
+    protected static string | \UnitEnum | null $navigationGroup = 'Ventas';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('branch_id')
+        return $schema
+            ->components([
+                Select::make('branch_id')
                     ->label('Sucursal')
                     ->required()
                     ->relationship('branch', 'name'),
-                Forms\Components\TextInput::make('total_amount')
+                TextInput::make('total_amount')
                     ->label('Monto Total')
                     ->required()
                     ->prefix('Bs.')
@@ -47,7 +59,7 @@ class SaleResource extends Resource
                     $total = floatval($state);
                     $set('final_amount', max($total - $discount, 0));
                 }),
-                Forms\Components\TextInput::make('discount_amount')
+                TextInput::make('discount_amount')
                     ->label('Descuento')
                     ->required()
                     ->prefix('Bs.')
@@ -59,13 +71,13 @@ class SaleResource extends Resource
                         $discount = floatval($state);
                         $set('final_amount', max($total - $discount, 0));
                     }),
-                Forms\Components\TextInput::make('final_amount')
+                TextInput::make('final_amount')
                     ->label('Monto Final')
                     ->required()
                     ->prefix('Bs.')
                     ->numeric()
                     ->disabled(),
-                Forms\Components\Select::make('payment_method')
+                Select::make('payment_method')
                     ->label('Método de Pago')
                     ->options([
                         'cash' => 'Efectivo',
@@ -75,7 +87,7 @@ class SaleResource extends Resource
                         'other' => 'Otro',
                     ])
                     ->required(),
-                Forms\Components\Radio::make('status')
+                Radio::make('status')
                     ->label('Estado')
                     ->options([
                         'completed' => 'Completada',
@@ -84,7 +96,7 @@ class SaleResource extends Resource
                     ])
                     ->default('completed')
                     ->required(),
-                Forms\Components\Textarea::make('notes')
+                Textarea::make('notes')
                     ->columnSpanFull(),
             ]);
     }
@@ -93,25 +105,25 @@ class SaleResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('branch.name')
+                TextColumn::make('branch.name')
                     ->label('Sucursal')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->label('Usuario')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('total_amount')
+                TextColumn::make('total_amount')
                     ->label('Monto Total')
                     ->money('Bs.')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('discount_amount')
+                TextColumn::make('discount_amount')
                     ->label('Descuento')
                     ->money('Bs.')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('final_amount')
+                TextColumn::make('final_amount')
                     ->label('Monto Final')
                     ->money('Bs.')
                     ->sortable(),
-                Tables\Columns\IconColumn::make('payment_method')
+                IconColumn::make('payment_method')
                     ->label('Método de Pago')
                     ->icon(fn (string $state): string => match ($state) {
                         'Efectivo' => 'heroicon-o-banknotes',
@@ -126,12 +138,12 @@ class SaleResource extends Resource
                         'transfer' => 'info',
                     })
                     ->searchable(),
-                Tables\Columns\TextColumn::make('status'),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('status'),
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -139,12 +151,12 @@ class SaleResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -159,9 +171,9 @@ class SaleResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSales::route('/'),
-            'create' => Pages\CreateSale::route('/create'),
-            'edit' => Pages\EditSale::route('/{record}/edit'),
+            'index' => ListSales::route('/'),
+            'create' => CreateSale::route('/create'),
+            'edit' => EditSale::route('/{record}/edit'),
         ];
     }
 }

@@ -2,13 +2,22 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\SaleItemResource\Pages\ListSaleItems;
+use App\Filament\Resources\SaleItemResource\Pages\CreateSaleItem;
+use App\Filament\Resources\SaleItemResource\Pages\EditSaleItem;
 use App\Filament\Resources\SaleItemResource\Pages;
 use App\Filament\Resources\SaleItemResource\RelationManagers;
 use App\Models\SaleItem;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\Summarizers\Sum;
@@ -20,31 +29,31 @@ class SaleItemResource extends Resource
 {
     protected static ?string $model = SaleItem::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-wallet';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-wallet';
 
     protected static ?string $modelLabel = 'Venta de Artículo';
 
     protected static ?string $navigationLabel = 'Ventas de Artículos';
 
-    protected static ?string $navigationGroup = 'Ventas';
+    protected static string | \UnitEnum | null $navigationGroup = 'Ventas';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('sale_id')
+        return $schema
+            ->components([
+                Select::make('sale_id')
                     ->label('Venta')
                     ->required()
                     ->relationship('sale', 'id'),
-                Forms\Components\Select::make('product_id')
+                Select::make('product_id')
                     ->label('Producto')
                     ->required()
                     ->relationship('product', 'name'),
-                Forms\Components\TextInput::make('quantity')
+                TextInput::make('quantity')
                     ->label('Cantidad')    
                     ->required()
                     ->numeric(),
-                Forms\Components\TextInput::make('unit_price')
+                TextInput::make('unit_price')
                     ->label('Precio Unitario')
                     ->required()
                     ->prefix('Bs.')
@@ -55,12 +64,12 @@ class SaleItemResource extends Resource
                         $unitPrice = floatval($state);
                         $set('subtotal', max($quantity * $unitPrice, 0));
                     }),
-                Forms\Components\TextInput::make('subtotal')
+                TextInput::make('subtotal')
                     ->required()
                     ->numeric()
                     ->default(0.00)
                     ->disabled(),
-                Forms\Components\TextInput::make('discount')
+                TextInput::make('discount')
                     ->required()
                     ->numeric()
                     ->default(0.00)
@@ -70,7 +79,7 @@ class SaleItemResource extends Resource
                         $discount = floatval($state);
                         $set('total', max($subtotal - $discount, 0));
                     }),
-                Forms\Components\TextInput::make('total')
+                TextInput::make('total')
                     ->required()
                     ->numeric()
                     ->default(0.00)
@@ -82,39 +91,39 @@ class SaleItemResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('sale_id')
+                TextColumn::make('sale_id')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('product.name')
+                TextColumn::make('product.name')
                     ->label('Producto')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('quantity')
+                TextColumn::make('quantity')
                     ->label('Cantidad')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('unit_price')
+                TextColumn::make('unit_price')
                     ->label('Precio Unitario')
                     ->money('Bs.')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('subtotal')
+                TextColumn::make('subtotal')
                     ->label('Subtotal')
                     ->money('Bs.')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('discount')
+                TextColumn::make('discount')
                     ->label('Descuento')
                     ->money('Bs.')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('total')
+                TextColumn::make('total')
                     ->label('Total')
                     ->money('Bs.')
                     ->sortable()
                     ->summarize(Sum::make()->label('Total')->money('BOB')),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -122,12 +131,12 @@ class SaleItemResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -142,9 +151,9 @@ class SaleItemResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSaleItems::route('/'),
-            'create' => Pages\CreateSaleItem::route('/create'),
-            'edit' => Pages\EditSaleItem::route('/{record}/edit'),
+            'index' => ListSaleItems::route('/'),
+            'create' => CreateSaleItem::route('/create'),
+            'edit' => EditSaleItem::route('/{record}/edit'),
         ];
     }
 }

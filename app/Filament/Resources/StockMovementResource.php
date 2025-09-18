@@ -2,11 +2,22 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\StockMovementResource\Pages\ListStockMovements;
+use App\Filament\Resources\StockMovementResource\Pages\CreateStockMovement;
+use App\Filament\Resources\StockMovementResource\Pages\EditStockMovement;
 use App\Filament\Resources\StockMovementResource\Pages;
 use App\Filament\Resources\StockMovementResource\RelationManagers;
 use App\Models\StockMovement;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,26 +28,26 @@ class StockMovementResource extends Resource
 {
     protected static ?string $model = StockMovement::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-arrow-right-start-on-rectangle';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-arrow-right-start-on-rectangle';
 
     protected static ?string $modelLabel = 'Movimiento de Stock';
 
     protected static ?string $navigationLabel = 'Movimientos de stock';
 
-    protected static ?string $navigationGroup = 'Inventario';
+    protected static string | \UnitEnum | null $navigationGroup = 'Inventario';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('branch_id')
+        return $schema
+            ->components([
+                Select::make('branch_id')
                     ->required()
                     ->relationship('branch', 'name'),
-                Forms\Components\Select::make('product_id')
+                Select::make('product_id')
                     ->relationship('product', 'name'),
-                Forms\Components\Select::make('ingredient_id')
+                Select::make('ingredient_id')
                     ->relationship('ingredient', 'name'),
-                Forms\Components\Radio::make('type')
+                Radio::make('type')
                     ->options([
                         'entry' => 'Entrada',
                         'exit' => 'Salida',
@@ -46,14 +57,14 @@ class StockMovementResource extends Resource
                     ])->columns(2)
                     ->label('Tipo de Movimiento')
                     ->required(),
-                Forms\Components\TextInput::make('quantity')
+                TextInput::make('quantity')
                     ->label('Cantidad')
                     ->required()
                     ->numeric(),
-                Forms\Components\TextInput::make('unit')
+                TextInput::make('unit')
                     ->label('Unidad')
                     ->maxLength(50),
-                Forms\Components\Textarea::make('description')
+                Textarea::make('description')
                     ->columnSpanFull(),
             ]);
     }
@@ -62,36 +73,36 @@ class StockMovementResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('branch.name')
+                TextColumn::make('branch.name')
                     ->label('Sucursal')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('product.name')
+                TextColumn::make('product.name')
                     ->label('Producto')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('ingredient.name')
+                TextColumn::make('ingredient.name')
                     ->label('Ingrediente')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('type')
+                TextColumn::make('type')
                     ->label('Tipo'),
-                Tables\Columns\TextColumn::make('quantity')
+                TextColumn::make('quantity')
                     ->label('Cantidad')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('unit')
+                TextColumn::make('unit')
                     ->label('Unidad')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->label('Usuario')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -99,12 +110,12 @@ class StockMovementResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -119,9 +130,9 @@ class StockMovementResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListStockMovements::route('/'),
-            'create' => Pages\CreateStockMovement::route('/create'),
-            'edit' => Pages\EditStockMovement::route('/{record}/edit'),
+            'index' => ListStockMovements::route('/'),
+            'create' => CreateStockMovement::route('/create'),
+            'edit' => EditStockMovement::route('/{record}/edit'),
         ];
     }
 }

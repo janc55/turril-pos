@@ -2,11 +2,23 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\SettingsResource\Pages\ListSettings;
+use App\Filament\Resources\SettingsResource\Pages\CreateSettings;
+use App\Filament\Resources\SettingsResource\Pages\EditSettings;
 use App\Filament\Resources\SettingsResource\Pages;
 use App\Filament\Resources\SettingsResource\RelationManagers;
 use App\Models\Settings;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -18,24 +30,24 @@ class SettingsResource extends Resource
 {
     protected static ?string $model = Settings::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Hidden::make('tenant_id')
+        return $schema
+            ->components([
+                Hidden::make('tenant_id')
                     ->default(null), // Nullable para configuraciones globales
-                Forms\Components\TextInput::make('key')
+                TextInput::make('key')
                     ->label('Clave')
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->disabledOn('edit'),
-                Forms\Components\TextInput::make('value')
+                TextInput::make('value')
                     ->label('Valor')
                     ->maxLength(255)
                     ->visible(fn ($record) => $record ? in_array($record->key, ['app_name', 'currency_symbol']) : true),
-                Forms\Components\FileUpload::make('value')
+                FileUpload::make('value')
                     ->label('Logo')
                     ->image()
                     ->directory('logos')
@@ -43,7 +55,7 @@ class SettingsResource extends Resource
                     ->preserveFilenames()
                     ->maxSize(2048)
                     ->visible(fn ($record) => $record && $record->key === 'logo_path'),
-                Forms\Components\Select::make('value')
+                Select::make('value')
                     ->label('Moneda')
                     ->options([
                         'BOB' => 'Boliviano (Bs.)',
@@ -63,7 +75,7 @@ class SettingsResource extends Resource
                             Cache::forget('settings_global');
                         }
                     }),
-                Forms\Components\Select::make('value')
+                Select::make('value')
                     ->label('Idioma')
                     ->options([
                         'es' => 'Español',
@@ -78,21 +90,21 @@ class SettingsResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('key')->label('Clave'),
-                Tables\Columns\TextColumn::make('value')->label('Valor'),
-                Tables\Columns\ImageColumn::make('value')
+                TextColumn::make('key')->label('Clave'),
+                TextColumn::make('value')->label('Valor'),
+                ImageColumn::make('value')
                     ->label('Logo')
                     ->visible(fn ($record) => $record !== null && $record->key === 'logo_path'),
             ])
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -107,9 +119,9 @@ class SettingsResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSettings::route('/'),
-            'create' => Pages\CreateSettings::route('/create'),
-            'edit' => Pages\EditSettings::route('/{record}/edit'),
+            'index' => ListSettings::route('/'),
+            'create' => CreateSettings::route('/create'),
+            'edit' => EditSettings::route('/{record}/edit'),
         ];
     }
 }

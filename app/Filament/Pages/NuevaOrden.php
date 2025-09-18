@@ -2,6 +2,9 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Resources\CashBoxResource;
+use App\Models\ComboItem;
+use Exception;
 use Filament\Pages\Page;
 use App\Models\Product;
 use App\Models\Sale;
@@ -10,20 +13,30 @@ use App\Models\CurrentStock;
 use App\Models\CashBox;
 use App\Models\CashMovement;
 use App\Models\StockMovement;
+use Filament\Actions\Action;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 use Illuminate\Support\Facades\DB;
 use Filament\Notifications\Notification; // Para notificaciones
+use Filament\Schemas\Components\Form;
+use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
-class NuevaOrden extends Page
+class NuevaOrden extends Page implements HasForms, HasActions
 {
-    
-    protected static ?string $navigationIcon = 'heroicon-o-shopping-cart'; // Icono para el sidebar
+    use InteractsWithForms, InteractsWithActions;
+
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-shopping-cart'; // Icono para el sidebar
 
     protected static ?string $modelLabel = 'Nueva Orden';
 
-    protected static ?string $navigationGroup = 'Ventas';
-    protected static string $view = 'filament.pages.nueva-orden'; // La vista Blade
+    protected static string | \UnitEnum | null $navigationGroup = 'Ventas';
+    protected string $view = 'filament.pages.nueva-orden'; // La vista Blade
     protected static ?string $navigationLabel = 'Nueva Orden'; // Texto en el sidebar
     protected static ?string $title = 'Punto de Venta'; // Título de la página
     protected static ?string $slug = 'pos'; // URL de la página: /admin/pos
@@ -35,6 +48,8 @@ class NuevaOrden extends Page
     public $currentCashBoxBalance = 0; // Balance actual de la caja
     public $paymentMethod = 'Efectivo'; // Método de pago por defecto
     public $todaySalesTotal = 0;
+
+    public bool $isCashBoxOpen = false;
 
     public int|null $lastSaleId = null; // Para almacenar el ID de la última venta realizada
 
@@ -51,9 +66,115 @@ class NuevaOrden extends Page
     public function mount(): void
     {
         // Cargar productos del menú al iniciar la página
-        $this->loadMenuProducts();
-        $this->loadCashBoxBalance();
-        $this->loadTodaySalesTotal();
+        //$this->loadMenuProducts();
+        //$this->loadCashBoxBalance();
+        //$this->loadTodaySalesTotal();
+        $userBranchId = Auth::user()->branch_id;
+        $this->isCashBoxOpen = CashBox::where('branch_id', $userBranchId)
+            ->where('status', 'true')
+            ->exists(); // 'exists()' es más eficiente que 'first()' si solo necesitas saber si el registro existe.
+
+        if ($this->isCashBoxOpen) {
+            $this->loadTodaySalesTotal();
+            $this->loadCashBoxBalance();
+            $this->loadMenuProducts();
+        }
+    }
+    
+    // Este método se llamará desde el botón de la vista
+    public function openCashBox()
+    {
+        // En lugar de una notificación, puedes emitir un evento
+        // para abrir un modal de Filament o redirigir.
+        // Por ejemplo, aquí podrías emitir un evento para un modal de apertura de caja.
+        
+        // Dispara el evento para abrir el modal de apertura de caja.
+        $this->dispatch('open-modal', id: 'open-cash-box');
+        
+        // O podrías redirigir a una página de gestión de cajas.
+        // return redirect()->route('filament.admin.resources.cash-boxes.index');
+    }
+
+    public function openCashBoxAction(): Action
+    {
+        // Obtener la sucursal del usuario
+        $userBranchId = Auth::user()->branch_id;
+
+        // Verificar si ya existe una caja abierta para esta sucursal
+        $cashBox = CashBox::where('branch_id', $userBranchId)
+                        ->where('status', 'true')
+                        ->first();
+
+        // El botón se mostrará solo si la caja no está abierta
+        if ($cashBox) {
+            return Action::make('alreadyOpen')
+                ->label('Caja Abierta')
+                ->color('success')
+                ->disabled();
+        }
+
+        return Action::make('openCashBox')
+            ->label('Abrir Caja')
+            ->icon('heroicon-o-currency-dollar')
+            ->modalHeading('Abrir Caja')
+            ->schema([
+                Hidden::make('branch_id')->default(Auth::user()->branch_id),
+                Hidden::make('name')->default(function () {
+                    $branch = Auth::user()->branch;
+                    return $branch ? $branch->name : 'Caja de ' . Auth::user()->name;
+                }),
+                TextInput::make('initial_balance')
+                    ->label('Balance Inicial')
+                    ->required()
+                    ->numeric()
+                    ->default(0.00)
+                    ->minValue(0)
+                    ->step(0.01)
+                    ->helperText('Ingresa el balance inicial para abrir la caja.'),
+                Hidden::make('status')->default('true'),
+            ])
+            ->action(function (array $data): void {
+                try {
+                    // Buscar si existe una caja para la sucursal, independientemente de su estado
+                    $existingCashBox = CashBox::where('branch_id', $data['branch_id'])->first();
+
+                    if ($existingCashBox) {
+                        // Si la caja ya existe, la actualizamos
+                        $existingCashBox->update([
+                            'user_id' => Auth::id(),
+                            'initial_balance' => $data['initial_balance'],
+                            'status' => 'true',
+                        ]);
+                    } else {
+                        // Si no existe, la creamos
+                        CashBox::create([
+                            'branch_id' => $data['branch_id'],
+                            'name' => $data['name'],
+                            'user_id' => Auth::id(),
+                            'initial_balance' => $data['initial_balance'],
+                            'current_balance' => $data['initial_balance'],
+                            'status' => 'true',
+                        ]);
+                    }
+
+                    // Actualizar el estado de la página para ocultar el botón
+                    $this->isCashBoxOpen = true;
+
+                    // Notificación de éxito
+                    Notification::make()
+                        ->title('Caja abierta exitosamente!')
+                        ->success()
+                        ->send();
+                        
+                } catch (\Exception $e) {
+                    // Notificación de error con el mensaje de la excepción para depuración
+                    Notification::make()
+                        ->title('Error al abrir la caja')
+                        ->body('Ocurrió un error: ')
+                        ->danger()
+                        ->send();
+                }
+            });
     }
 
     protected function loadMenuProducts(): void
@@ -76,7 +197,7 @@ class NuevaOrden extends Page
         $userBranchId = Auth::user()->branch_id;
         if ($userBranchId) {
             $cashBox = CashBox::where('branch_id', $userBranchId)
-                               ->where('status', 'open') // Asume que la caja está abierta
+                               ->where('status', 'true') // Asume que la caja está abierta
                                ->first();
             $this->currentCashBoxBalance = $cashBox ? $cashBox->current_balance : 0;
         }
@@ -87,7 +208,7 @@ class NuevaOrden extends Page
         $userBranchId = Auth::user()->branch_id;
 
         // Ventas de hoy para esta sucursal (ajusta según tu modelo)
-        $this->todaySalesTotal = \App\Models\Sale::where('branch_id', $userBranchId)
+        $this->todaySalesTotal = Sale::where('branch_id', $userBranchId)
             ->whereDate('created_at', today())
             ->where('status', 'completed')
             ->sum('final_amount');
@@ -173,7 +294,7 @@ class NuevaOrden extends Page
         }
 
         $cashBox = CashBox::where('branch_id', $userBranchId)
-                        ->where('status', 'open')
+                        ->where('status', 'true')
                         ->first();
 
         if (!$cashBox) {
@@ -270,10 +391,10 @@ class NuevaOrden extends Page
                             'description' => 'Venta de producto ' . $product->name . ' (Orden #' . $sale->id . ')',
                         ]);
                     } else if ($product->is_combo) {
-                    $comboItems = \App\Models\ComboItem::where('combo_product_id', $product->id)->get();
+                    $comboItems = ComboItem::where('combo_product_id', $product->id)->get();
 
                     foreach ($comboItems as $comboItem) {
-                        $comboProduct = \App\Models\Product::find($comboItem->product_id);
+                        $comboProduct = Product::find($comboItem->product_id);
                         $comboNeededQuantity = $item['quantity'] * $comboItem->quantity;
 
                         if ($comboProduct->type === 'sandwich') {
@@ -363,7 +484,7 @@ class NuevaOrden extends Page
             $this->cart = [];
             $this->total = 0;
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             Notification::make()
                 ->title('Error al realizar el pedido: ' . $e->getMessage())

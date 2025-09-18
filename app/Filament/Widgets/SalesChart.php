@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Auth;
 
 class SalesChart extends ChartWidget
 {
-    protected static ?string $heading = 'Resumen de Ventas (Últimos 6 Meses)';
-    protected static string $color = 'info';
+    protected ?string $heading = 'Resumen de Ventas (Últimos 6 Meses)';
+    protected string $color = 'info';
     protected static ?int $sort = 2;
 
     /**

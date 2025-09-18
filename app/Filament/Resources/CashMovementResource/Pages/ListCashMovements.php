@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CashMovementResource\Pages;
 
+use Filament\Actions\CreateAction;
 use App\Filament\Resources\CashMovementResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
@@ -13,7 +14,7 @@ class ListCashMovements extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            CreateAction::make(),
         ];
     }
 }
