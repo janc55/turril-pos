@@ -6,6 +6,7 @@ use App\Models\CashMovement;
 use App\Models\StockMovement;
 use App\Observers\CashMovementObserver;
 use App\Observers\StockMovementObserver;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -15,7 +16,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        if ($this->app->environment('production')) {
+            URL::forceRootUrl(config('app.url'));
+        }
+        
     }
 
     /**

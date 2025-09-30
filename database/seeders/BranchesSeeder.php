@@ -25,18 +25,9 @@ class BranchesSeeder extends Seeder
         Branch::create([
             'name' => 'Sucursal Ayacucho',
             'address' => 'Ayacucho entre 6 de octubre y Soria Galvarro',
-            'phone' => '23456789',
-            'email' => 'ayacucho@turril.com',
+            'phone' => '77150404',
+            'email' => 'ayacucho@elturril.com',
             'description' => 'Sucursal principal en la zona céntrica.',
-            'active' => true,
-        ]);
-
-        Branch::create([
-            'name' => 'Sucursal Zona Norte',
-            'address' => 'Calle Los Álamos #45',
-            'phone' => '34567890',
-            'email' => 'norte@turril.com',
-            'description' => 'Sucursal en el área comercial del norte.',
             'active' => true,
         ]);
     }

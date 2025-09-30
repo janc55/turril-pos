@@ -23,10 +23,10 @@ class RolesAndUsersSeeder extends Seeder
         // 1. Crear Usuarios
         // Usuario Admin
         $adminUser = User::firstOrCreate(
-            ['email' => 'josenegretti@gmail.com'],
+            ['email' => 'simon.negretti@gmail.com'],
             [
-                'name' => 'Jose Negretti',
-                'password' => Hash::make('password'), // Contraseña simple para desarrollo
+                'name' => 'Simón Negretti',
+                'password' => Hash::make('ElTurril%123'), // Contraseña simple para desarrollo
                 'email_verified_at' => now(),
                 'branch_id' => $centralBranch->id, // Asignar al almacén central
                 'active' => true,
@@ -40,7 +40,7 @@ class RolesAndUsersSeeder extends Seeder
             ['email' => 'gerente@turril.com'],
             [
                 'name' => 'Gerente Sucursal',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('ElTurril%123'),
                 'email_verified_at' => now(),
                 'branch_id' => $pradoBranch->id, // Asignar a sucursal El Prado
                 'active' => true,
@@ -54,7 +54,7 @@ class RolesAndUsersSeeder extends Seeder
             ['email' => 'cajero@turril.com'],
             [
                 'name' => 'Cajero Principal',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('ElTurril%456'),
                 'email_verified_at' => now(),
                 'branch_id' => $pradoBranch->id, // Asignar a sucursal El Prado
                 'active' => true,

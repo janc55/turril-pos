@@ -113,7 +113,7 @@ class SpatiePermissionsSeeder extends Seeder
         // --- 3. Asignar Roles a Usuarios Existentes ---
         // Estos usuarios ya fueron creados por tu RolesAndUsersSeeder.
         // Asumiendo que sus emails son únicos y están en la tabla 'users'
-        User::where('email', 'josenegretti@gmail.com')->first()?->assignRole('Administrador');
+        User::where('email', 'simon.negretti@gmail.com')->first()?->assignRole('Administrador');
         User::where('email', 'gerente@turril.com')->first()?->assignRole('Gerente');
         User::where('email', 'cajero@turril.com')->first()?->assignRole('Cajero');
         // Si tienes un usuario almacenero, asignarle el rol aquí.
