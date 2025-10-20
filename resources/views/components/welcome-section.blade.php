@@ -3,11 +3,15 @@
     <div class="text-center px-4 max-w-md relative z-10">
         <img src="{{ asset('images/logo_elturril.svg') }}" alt="El Turril Logo" class="h-24 sm:h-40 mx-auto mb-6 transition-transform duration-500 hover:scale-105 animate-shine" style="filter: drop-shadow(0 0 20px #f1c31a);">
 
-        <h1 class="text-5xl sm:text-7xl font-extrabold mb-4 text-[#f1c31a] animate-shine">
-            Bienvenido a El Turril
+        <h1 class="text-4xl md:text-6xl font-bold mb-4 animate-fade-in" style="animation-delay: 0.2s;">
+            <span class="text-yellow-400">EL TURRIL</span>
         </h1>
-        <p class="text-xl sm:text-2xl max-w-2xl mx-auto mb-8 font-light text-white">
-            Donde la tecnología impulsa el sabor. <br> Descubre nuestro menú y el sistema que lo gestiona.
+        <p class="text-xl md:text-2xl mb-8 animate-fade-in" style="animation-delay: 0.4s;">
+            Sabor único, preparación tradicional
+        </p>
+        <p class="text-lg max-w-2xl mx-auto mb-10 animate-fade-in" style="animation-delay: 0.6s;">
+            Descubre nuestros sandwiches con carne cocinada al turril durante horas, 
+            logrando ese sabor ahumado que nos caracteriza.
         </p>
 
         <p class="text-sm text-gray-400 mt-10 animate-pulse-slow">

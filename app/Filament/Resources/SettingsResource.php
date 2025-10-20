@@ -30,7 +30,15 @@ class SettingsResource extends Resource
 {
     protected static ?string $model = Settings::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-cog-6-tooth';
+
+    protected static string | \UnitEnum | null $navigationGroup = 'Administración';
+
+    protected static ?string $modelLabel = 'Configuración';
+
+    protected static ?string $navigationLabel = 'Configuraciones';
+
+    protected static ?string $pluralLabel = 'Configuraciones';
 
     public static function form(Schema $schema): Schema
     {

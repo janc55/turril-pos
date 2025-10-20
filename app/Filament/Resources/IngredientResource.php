@@ -33,6 +33,8 @@ class IngredientResource extends Resource
 
     protected static ?string $navigationLabel = 'Ingredientes';
 
+    protected static ?string $pluralLabel = 'Ingredientes';
+
     protected static string | \UnitEnum | null $navigationGroup = 'Inventario';
 
     public static function form(Schema $schema): Schema

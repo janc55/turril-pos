@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -50,6 +51,18 @@ class User extends Authenticatable
             'active' => 'boolean', // Cast a booleano
         ];
     }
+
+    /**
+     * Determine if the user can access the Filament panel.
+     *
+     * @param  Panel  $panel
+     * @return bool
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->active;
+    }
+    
      // RELACIONES
 
     public function branch()

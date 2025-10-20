@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>El Turril - Sandwiches Ahumados</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Favicon básico -->
+    <link rel="icon" type="image/x-icon" href="{{ asset('images/logo_elturril.svg') }}">
 </head>
 <body class="bg-black text-white overflow-hidden">
 
-    <main class="min-h-screen pt-16">
+    <main class="min-h-screen">
         @yield('content')
     </main>
     

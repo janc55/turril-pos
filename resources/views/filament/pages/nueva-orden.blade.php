@@ -201,9 +201,9 @@
                         <p class="text-gray-500 dark:text-gray-400 mb-6">
                             Para empezar a vender, por favor, abre una caja.
                         </p>
-                        <x-filament::button wire:click="openCashBox" color="primary" size="lg" class="w-full">
+                        {{-- <x-filament::button wire:click="openCashBox" color="primary" size="lg" class="w-full">
                             Abrir Caja
-                        </x-filament::button>
+                        </x-filament::button> --}}
                         {{ $this->openCashBoxAction }}
                     </div>
                 </div>

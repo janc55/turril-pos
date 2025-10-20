@@ -32,6 +32,12 @@ class SupplierResource extends Resource
 
     protected static string | \UnitEnum | null $navigationGroup = 'Inventario';
 
+    protected static ?string $modelLabel = 'Proveedor';
+
+    protected static ?string $navigationLabel = 'Proveedores';
+
+    protected static ?string $pluralLabel = 'Proveedores';
+
     public static function form(Schema $schema): Schema
     {
         return $schema
