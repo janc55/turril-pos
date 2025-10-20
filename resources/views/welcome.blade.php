@@ -7,6 +7,9 @@
     x-init="init()"
     class="w-full h-screen overflow-hidden relative"
     @wheel.prevent.debounce.150ms="handleScroll($event)"
+    @touchstart="handleTouchStart($event)"
+    @touchmove.prevent="handleTouchMove($event)"
+    @touchend="handleTouchEnd($event)"
 >
     <!-- Pages Container -->
     <div 
@@ -29,6 +32,9 @@ function pagesApp() {
         currentPage: 0,
         maxPages: 3, // 0-based index for 4 pages
         isScrolling: false,
+        startX: 0,
+        currentX: 0,
+        threshold: 50, // Píxeles mínimos para detectar swipe
 
         init() {
             // Asegurar que empezamos en la página 0
@@ -69,6 +75,36 @@ function pagesApp() {
             } else if (event.deltaY < 0) {
                 this.prevPage();
             }
+        },
+
+        // Nuevos métodos para touch/swipe en móvil
+        handleTouchStart(event) {
+            this.startX = event.touches[0].clientX;
+            this.currentX = this.startX;
+        },
+
+        handleTouchMove(event) {
+            if (this.isScrolling) return;
+            this.currentX = event.touches[0].clientX;
+        },
+
+        handleTouchEnd(event) {
+            if (this.isScrolling) return;
+            
+            const deltaX = this.currentX - this.startX;
+            
+            // Swipe a la derecha (deltaX negativo): página anterior
+            if (deltaX < -this.threshold) {
+                this.prevPage();
+            }
+            // Swipe a la izquierda (deltaX positivo): página siguiente
+            else if (deltaX > this.threshold) {
+                this.nextPage();
+            }
+            
+            // Reset
+            this.startX = 0;
+            this.currentX = 0;
         }
     }
 }
