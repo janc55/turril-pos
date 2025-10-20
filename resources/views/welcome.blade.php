@@ -8,7 +8,7 @@
     class="w-full h-screen overflow-hidden relative"
     @wheel.prevent.debounce.150ms="handleScroll($event)"
     @touchstart="handleTouchStart($event)"
-    @touchmove.prevent="handleTouchMove($event)"
+    @touchmove="handleTouchMove($event)"
     @touchend="handleTouchEnd($event)"
 >
     <div 
@@ -71,8 +71,14 @@ function pagesApp() {
         currentX: 0,
         threshold: 50, // Píxeles mínimos para detectar swipe (suficiente)
 
+        menuContainer: null,
+
         init() {
             this.currentPage = 0;
+            // Configura el contenedor del menú una vez que el DOM esté listo
+            this.$nextTick(() => {
+                this.menuContainer = this.$refs.menuScroll;
+            });
             // Opcional: Agregar soporte para navegación por teclado (flechas)
             window.addEventListener('keydown', (e) => {
                 if (e.key === 'ArrowRight') {
@@ -119,21 +125,32 @@ function pagesApp() {
         },
 
         handleTouchStart(event) {
+            // Verifica si el toque comenzó DENTRO del contenedor de scroll del menú.
+            // Si menuContainer existe y el target del evento ES o está DENTRO del contenedor, lo ignoramos.
+            if (this.menuContainer && this.menuContainer.contains(event.target)) {
+                this.startX = 0; // Marcar como inactivo para evitar swipe de página
+                return;
+            }
+
             this.startX = event.touches[0].clientX;
             this.currentX = this.startX;
         },
 
         handleTouchMove(event) {
             if (this.isScrolling) return;
+            // Si startX es 0, el toque comenzó en el área de menú, lo ignoramos Y NO prevenimos default para permitir scroll nativo.
+            if (this.startX === 0) return; 
+            
+            // Solo prevenimos default si estamos manejando un swipe de página (no en menú)
+            event.preventDefault();
             this.currentX = event.touches[0].clientX;
         },
 
         handleTouchEnd(event) {
-            if (this.isScrolling) return;
+            if (this.isScrolling || this.startX === 0) return; // Ignorar si ya está en scroll o si se ignoró en touchstart
             
             const deltaX = this.currentX - this.startX;
             
-            // LÓGICA CORREGIDA:
             // Swipe a la DERECHA (deltaX positivo > threshold): Página ANTERIOR (<-)
             if (deltaX > this.threshold) {
                 this.prevPage();

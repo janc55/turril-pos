@@ -30,3 +30,40 @@
         scrollbar-width: thin;
         scrollbar-color: #888 #f1f1f1;
     }
+
+    .icon-scroll,
+    .icon-scroll:before {
+        position: absolute;
+    }
+
+    .icon-scroll {
+        width: 40px;
+        height: 70px;
+        box-shadow: inset 0 0 0 1px #f1c31a;
+        border-radius: 25px;
+    }
+
+    .icon-scroll:before {
+        content: '';
+        width: 14px;  /* Más grande: de 8px a 14px */
+        height: 14px; /* Más grande: de 8px a 14px */
+        background: #f1c31a;
+        left: 50%;    /* Centrado horizontalmente */
+        top: 8px;     /* Mantengo el top inicial */
+        margin-left: -7px; /* Centrado perfecto: -half de 14px */
+        border-radius: 50%; /* Círculo redondo (cambié de 4px a 50% para mejor forma) */
+        animation-duration: 1.5s;
+        animation-iteration-count: infinite;
+        animation-name: scroll;
+    }
+
+    @keyframes scroll {
+        0% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        100% {
+            opacity: 0;
+            transform: translateY(52px); /* Ajustado para que baje más, acorde al tamaño */
+        }
+    }

@@ -25,6 +25,6 @@
             @endforeach
         </div>
         
-        <button @click="nextPage()" class="mt-8 text-yellow-400 hover:text-white transition-colors text-lg">→ Contáctanos</button>
+        <button @click="nextPage()" class="mt-8 text-yellow-400 hover:text-white transition-colors text-sm">→ Contáctanos</button>
     </div>
 </section>

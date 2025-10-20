@@ -8,7 +8,9 @@
         </p>
 
         <!-- Contenedor para grilla responsiva: horizontal scroll en móvil con snap -->
-        <div class="w-full max-w-6xl overflow-x-auto md:overflow-visible pb-6 md:pb-0 -mx-4 md:mx-0 px-4 md:px-0 scrollbar-hide snap-x snap-mandatory md:snap-none flex flex-nowrap md:grid md:grid-cols-3 gap-4 md:gap-8">
+        <div class="w-full max-w-6xl overflow-x-auto md:overflow-visible pb-6 md:pb-0 -mx-4 md:mx-0 px-4 md:px-0 scrollbar-hide snap-x snap-mandatory md:snap-none flex flex-nowrap md:grid md:grid-cols-3 gap-4 md:gap-8" 
+            x-ref="menuScroll"
+            x-init="$nextTick(() => { if (currentPage === 1) menuContainer = $refs.menuScroll; })">
             {{-- Turrilito Mejorado --}}
             <div class="bg-gray-800 rounded-xl shadow-2xl overflow-hidden transform hover:scale-[1.02] transition duration-300 animate-slide-in-left group border border-gray-700 flex-shrink-0 w-80 max-w-full md:w-auto md:max-w-none snap-start">
                 <img src="{{ asset('images/image1.webp') }}" alt="Turrilito" class="w-full h-40 md:h-48 object-cover group-hover:scale-105 transition-transform duration-500">
@@ -104,6 +106,6 @@
         </div>
         
         {{-- Quitamos el botón de "Explora Combos" ya que las flechas de navegación lo hacen --}}
-        <button @click="nextPage()" class="mt-8 text-yellow-400 hover:text-white transition-colors text-lg">→ Explora Combos</button> 
+        <button @click="nextPage()" class="mt-8 text-yellow-400 hover:text-white transition-colors text-sm">→ Explora Combos</button> 
     </div>
 </section>
