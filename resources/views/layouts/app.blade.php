@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="7ic8FbjjldcFHhnzUnseqJyllGN_yUOaZcdu8jPn1f8" />
     <title>El Turril - Sandwiches Ahumados</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Favicon básico -->

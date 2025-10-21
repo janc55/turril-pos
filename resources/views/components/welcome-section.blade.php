@@ -16,7 +16,7 @@
         </p>
 
         <p class="text-sm text-gray-400 mt-10 animate-pulse-slow">
-            Desliza horizontalmente para explorar el Menú →
+            Desliza para explorar el Menú →
         </p>
 
         <!-- Ícono animado de swipe para móvil (oculto en desktop, ahora con más espacio abajo del texto) -->
