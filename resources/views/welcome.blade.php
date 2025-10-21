@@ -34,8 +34,9 @@
                 class="h-3 rounded-full transition-all duration-300 ease-in-out shadow-lg focus:outline-none"
                 :aria-label="`Ir a página ${i}`"
             ></button>
-        </template>
+        </template>        
     </div>
+    
 
     <button 
         x-show="currentPage > 0"
@@ -79,6 +80,15 @@ function pagesApp() {
             this.$nextTick(() => {
                 this.menuContainer = this.$refs.menuScroll;
             });
+            // Activar animación de swipe icon (solo en primera página y móvil)
+            if (window.innerWidth < 640 && this.currentPage === 0) { // sm breakpoint
+                const path = document.querySelector(".path");
+                const handIcon = document.querySelector(".hand-icon");
+                if (path && handIcon) {
+                    path.style.animation = "swipe-dot 2s 0.5s infinite";
+                    handIcon.style.animation = "swipe-hand 2s infinite";
+                }
+            }
             // Opcional: Agregar soporte para navegación por teclado (flechas)
             window.addEventListener('keydown', (e) => {
                 if (e.key === 'ArrowRight') {

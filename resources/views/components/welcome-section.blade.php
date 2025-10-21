@@ -15,8 +15,24 @@
         </p>
 
         <p class="text-sm text-gray-400 mt-10 animate-pulse-slow">
-            Desliza o haz click en la flecha para ver el Menú.
+            Desliza horizontalmente para explorar el Menú →
         </p>
+
+        <!-- Ícono animado de swipe para móvil (oculto en desktop, ahora con más espacio abajo del texto) -->
+        <div class="swipe flex justify-center items-center mt-6 mb-4 z-20 sm:hidden">
+            <div class="path"></div>
+            <div class="hand-icon animated" 
+                style="background-image: url('{{ asset('images/hand-icon.svg') }}');
+                        background-repeat: no-repeat;
+                        background-position: center;
+                        background-size: contain;
+                        width: 50px;
+                        height: 50px;
+                        position: relative;
+                        transform-origin: 50% 70%;
+                        z-index: 20;">
+            </div>
+        </div>
     </div>
 
     <!-- Icono de scroll down en esquina inferior derecha (solo en pantallas grandes) -->
