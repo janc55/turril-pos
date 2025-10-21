@@ -1,5 +1,6 @@
 <!-- Page 1: Bienvenida -->
 <section class="w-[100vw] h-full flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-black via-black/50 to-yellow-900/20 relative overflow-hidden">
+    
     <div class="text-center px-4 max-w-md relative z-10">
         <img src="{{ asset('images/el_turril.webp') }}" alt="El Turril Logo" class="h-24 sm:h-40 mx-auto mb-6 transition-transform duration-500 hover:scale-105 animate-shine" style="filter: drop-shadow(0 0 20px #f1c31a);">
 

@@ -9,7 +9,7 @@
     <!-- Favicon básico -->
     <link rel="icon" type="image/x-icon" href="{{ asset('images/logo_elturril.svg') }}">
 </head>
-<body class="bg-black text-white overflow-hidden">
+<body class="bg-black text-white">
 
     <main class="min-h-screen">
         @yield('content')

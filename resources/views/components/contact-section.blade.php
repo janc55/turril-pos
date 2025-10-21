@@ -29,5 +29,8 @@
         </div>
         
         <button @click="prevPage()" class="mt-8 text-white/50 hover:text-yellow-400 transition-colors text-sm">← Volver al Menú</button>
+        
+        <!-- Créditos -->
+        <p class="text-xs text-white/30 text-center mt-6">Desarrollado por <a href="https://nettidev.com" target="_blank" rel="noopener noreferrer" class="text-yellow-400 hover:text-yellow-300 transition-colors">NettiDev</a></p>
     </div>
 </section>
