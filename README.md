@@ -1,61 +1,147 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# El Turril POS - Sistema de Punto de Venta
 
-## About Laravel
+![Logo El Turril](public/images/el_turril.webp)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+El Turril POS es un completo sistema de Punto de Venta (POS) diseñado para gestionar las operaciones de un restaurante o negocio de comida. Permite la administración de sucursales, inventario, recetas, ventas, compras y personal de una manera eficiente y centralizada.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tabla de Contenidos
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- [Sobre el Proyecto](#sobre-el-proyecto)
+- [Tecnologías Utilizadas](#tecnologías-utilizadas)
+- [Características Principales](#características-principales)
+- [Esquema de la Base de Datos](#esquema-de-la-base-de-datos)
+- [Cómo Empezar](#cómo-empezar)
+  - [Pre-requisitos](#pre-requisitos)
+  - [Instalación](#instalación)
+- [Uso](#uso)
+- [Contribuciones](#contribuciones)
+- [Licencia](#licencia)
 
-## Learning Laravel
+## Sobre el Proyecto
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Este proyecto ha sido desarrollado para "El Turril", un negocio que necesitaba una solución a medida para la gestión de su punto de venta. El sistema está construido con tecnologías modernas y robustas, enfocado en la facilidad de uso y la escalabilidad.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Tecnologías Utilizadas
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Backend:**
+  - PHP 8.2
+  - Laravel 12
+  - Filament 4.0 (Panel de Administración)
+  - Spatie Laravel Permission (Gestión de Roles y Permisos)
+  - Barryvdh Laravel DomPDF (Generación de PDFs)
+- **Frontend:**
+  - Vite
+  - Alpine.js
+  - Tailwind CSS
+- **Base de Datos:**
+  - Compatible con MySQL, PostgreSQL, SQLite.
 
-## Laravel Sponsors
+## Características Principales
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **Gestión de Múltiples Sucursales:** Administra diferentes locales desde un solo lugar.
+- **Control de Inventario:** Seguimiento en tiempo real del stock de ingredientes y productos.
+- **Gestión de Recetas:** Define los ingredientes y cantidades para cada producto, permitiendo el descuento automático de inventario.
+- **Punto de Venta (POS):** Una interfaz intuitiva (`/nueva-orden`) para registrar ventas de forma rápida.
+- **Gestión de Compras:** Registra las compras a proveedores y actualiza el inventario.
+- **Control de Caja:** Administra los movimientos de efectivo en diferentes cajas.
+- **Gestión de Usuarios y Roles:** Asigna permisos específicos a cada empleado.
+- **Reportes:** (Funcionalidad implícita a través de los recursos de Filament) Genera reportes de ventas, compras, etc.
 
-### Premium Partners
+## Esquema de la Base de Datos
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+El sistema se basa en un esquema de base de datos relacional que incluye las siguientes entidades principales:
 
-## Contributing
+- `branches`: Sucursales del negocio.
+- `products`: Productos finales para la venta.
+- `ingredients`: Materias primas.
+- `recipes` y `recipe_ingredients`: Recetas que definen la composición de los productos.
+- `purchases` y `purchase_items`: Compras de ingredientes a proveedores (`suppliers`).
+- `current_stock` y `stock_movements`: Niveles de inventario y sus movimientos.
+- `sales` y `sale_items`: Ventas a clientes.
+- `cash_boxes` y `cash_movements`: Cajas de efectivo y sus transacciones.
+- `users` y `roles`: Usuarios del sistema y sus roles.
+- `settings`: Configuraciones generales de la aplicación.
+- `combo_items`: Para la creación de combos o paquetes de productos.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Cómo Empezar
 
-## Code of Conduct
+Sigue estos pasos para tener una copia local del proyecto funcionando.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Pre-requisitos
 
-## Security Vulnerabilities
+Asegúrate de tener instalado lo siguiente:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- PHP 8.2 o superior
+- Composer
+- Node.js y npm
+- Un servidor de base de datos (ej. MySQL, MariaDB)
 
-## License
+### Instalación
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+1. **Clona el repositorio:**
+   ```sh
+   git clone https://github.com/tu-usuario/el-turril-pos.git
+   cd el-turril-pos
+   ```
+
+2. **Instala las dependencias de PHP:**
+   ```sh
+   composer install
+   ```
+
+3. **Instala las dependencias de Node.js:**
+   ```sh
+   npm install
+   ```
+
+4. **Configura el entorno:**
+   - Copia el archivo de ejemplo `.env.example` a `.env`:
+     ```sh
+     cp .env.example .env
+     ```
+   - Genera la clave de la aplicación:
+     ```sh
+     php artisan key:generate
+     ```
+   - Configura las credenciales de tu base de datos en el archivo `.env`.
+
+5. **Ejecuta las migraciones y los seeders:**
+   ```sh
+   php artisan migrate --seed
+   ```
+   Esto creará la estructura de la base de datos y la poblará con datos iniciales.
+
+6. **Compila los assets del frontend:**
+   ```sh
+   npm run build
+   ```
+
+7. **Inicia el servidor de desarrollo:**
+   ```sh
+   php artisan serve
+   ```
+
+## Uso
+
+Una vez que el servidor esté en funcionamiento, puedes acceder al panel de administración en la ruta `/admin`.
+
+- **Login:** Utiliza las credenciales creadas por los seeders (puedes encontrarlas en `database/seeders/RolesAndUsersSeeder.php`).
+- **Panel de Administración:** Desde aquí puedes gestionar todos los aspectos del sistema (productos, inventario, etc.).
+- **Nueva Orden:** Para crear una nueva venta, dirígete a la sección "Nueva Orden" en el panel.
+
+## Contribuciones
+
+Las contribuciones son lo que hacen a la comunidad de código abierto un lugar increíble para aprender, inspirar y crear. Cualquier contribución que hagas será **muy apreciada**.
+
+Si tienes una sugerencia para mejorar esto, por favor haz un fork del repositorio y crea una pull request. También puedes simplemente abrir un issue con la etiqueta "enhancement".
+
+1. Haz un Fork del Proyecto
+2. Crea tu Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Haz Commit de tus Cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Haz Push a la Branch (`git push origin feature/AmazingFeature`)
+5. Abre una Pull Request
+
+## Licencia
+
+Distribuido bajo la Licencia MIT. Ver `LICENSE` para más información.
