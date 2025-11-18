@@ -33,7 +33,8 @@ class PermissionPolicy
     public function create(User $user): bool
     {
         // Permissions are usually discovered, not created via UI
-        return false;
+        //return false;
+        return $user->hasRole('Administrador');
     }
 
     /**

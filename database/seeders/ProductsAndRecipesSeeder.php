@@ -20,8 +20,6 @@ class ProductsAndRecipesSeeder extends Seeder
         $cerdoDesmenuzado = Ingredient::where('name', 'Cerdo Desmenuzado')->first();
         $panPequeno = Ingredient::where('name', 'Pan Pequeño')->first();
         $panGrande = Ingredient::where('name', 'Pan Grande')->first();
-        $ensaladaMixta = Ingredient::where('name', 'Ensalada Mixta')->first();
-        $mayonesa = Ingredient::where('name', 'Mayonesa')->first();
         // Asegúrate de que todos los ingredientes necesarios existen
 
         // --- Sandwiches ---
@@ -46,8 +44,6 @@ class ProductsAndRecipesSeeder extends Seeder
         $recipeTurrilitoPollo->ingredients()->syncWithoutDetaching([
             $polloDesmenuzado->id => ['quantity' => 60],
             $panPequeno->id => ['quantity' => 1],
-            $ensaladaMixta->id => ['quantity' => 20],
-            $mayonesa->id => ['quantity' => 10], // por ejemplo
         ]);
 
 
@@ -71,8 +67,6 @@ class ProductsAndRecipesSeeder extends Seeder
         $recipeTurrilitoCerdo->ingredients()->syncWithoutDetaching([
             $cerdoDesmenuzado->id => ['quantity' => 60],
             $panPequeno->id => ['quantity' => 1],
-            $ensaladaMixta->id => ['quantity' => 20],
-            $mayonesa->id => ['quantity' => 10],
         ]);
 
         // Turrilazo de Pollo (80gr)
@@ -95,8 +89,6 @@ class ProductsAndRecipesSeeder extends Seeder
         $recipeTurrilazoPollo->ingredients()->syncWithoutDetaching([
             $polloDesmenuzado->id => ['quantity' => 80],
             $panGrande->id => ['quantity' => 1],
-            $ensaladaMixta->id => ['quantity' => 30],
-            $mayonesa->id => ['quantity' => 15],
         ]);
 
         // Turrilazo de Cerdo (80gr)
@@ -119,8 +111,6 @@ class ProductsAndRecipesSeeder extends Seeder
         $recipeTurrilazoCerdo->ingredients()->syncWithoutDetaching([
             $cerdoDesmenuzado->id => ['quantity' => 80],
             $panGrande->id => ['quantity' => 1],
-            $ensaladaMixta->id => ['quantity' => 30],
-            $mayonesa->id => ['quantity' => 15],
         ]);
 
         // Super Turril de Pollo (120gr)
@@ -143,8 +133,6 @@ class ProductsAndRecipesSeeder extends Seeder
         $recipeSuperTurrilPollo->ingredients()->syncWithoutDetaching([
             $polloDesmenuzado->id => ['quantity' => 120],
             $panGrande->id => ['quantity' => 1],
-            $ensaladaMixta->id => ['quantity' => 40],
-            $mayonesa->id => ['quantity' => 20],
         ]);
 
         // Super Turril de Cerdo (120gr)
@@ -167,8 +155,6 @@ class ProductsAndRecipesSeeder extends Seeder
         $recipeSuperTurrilCerdo->ingredients()->syncWithoutDetaching([
             $cerdoDesmenuzado->id => ['quantity' => 120],
             $panGrande->id => ['quantity' => 1],
-            $ensaladaMixta->id => ['quantity' => 40],
-            $mayonesa->id => ['quantity' => 20],
         ]);
 
 

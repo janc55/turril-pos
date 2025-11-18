@@ -52,6 +52,12 @@ class RecipeResource extends Resource
                     ->maxLength(255),
                 Textarea::make('description')
                     ->columnSpanFull(),
+                Select::make('ingredients')
+                    ->label('Ingredientes')
+                    ->multiple()
+                    ->relationship('ingredients', 'name')
+                    ->preload()
+                    ->required(),
             ]);
     }
 

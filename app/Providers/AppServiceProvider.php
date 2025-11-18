@@ -47,5 +47,9 @@ class AppServiceProvider extends ServiceProvider
 
         StockMovement::observe(StockMovementObserver::class);
         CashMovement::observe(CashMovementObserver::class);
+
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
+        }
     }
 }

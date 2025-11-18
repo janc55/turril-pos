@@ -71,7 +71,7 @@ class NuevaOrden extends Page implements HasForms, HasActions
         //$this->loadTodaySalesTotal();
         $userBranchId = Auth::user()->branch_id;
         $this->isCashBoxOpen = CashBox::where('branch_id', $userBranchId)
-            ->where('status', 'true')
+            ->where('status', true)
             ->exists(); // 'exists()' es más eficiente que 'first()' si solo necesitas saber si el registro existe.
 
         if ($this->isCashBoxOpen) {
@@ -100,9 +100,19 @@ class NuevaOrden extends Page implements HasForms, HasActions
         // Obtener la sucursal del usuario
         $userBranchId = Auth::user()->branch_id;
 
+        // Si el usuario no tiene sucursal, mostrar un botón deshabilitado con un tooltip.
+        if (!$userBranchId) {
+            return Action::make('noBranch')
+                ->label('Abrir Caja')
+                ->disabled()
+                ->color('danger')
+                ->icon('heroicon-o-x-circle')
+                ->tooltip('No tienes una sucursal asignada. Contacta a un administrador.');
+        }
+
         // Verificar si ya existe una caja abierta para esta sucursal
         $cashBox = CashBox::where('branch_id', $userBranchId)
-                        ->where('status', 'true')
+                        ->where('status', true)
                         ->first();
 
         // El botón se mostrará solo si la caja no está abierta
@@ -131,7 +141,7 @@ class NuevaOrden extends Page implements HasForms, HasActions
                     ->minValue(0)
                     ->step(0.01)
                     ->helperText('Ingresa el balance inicial para abrir la caja.'),
-                Hidden::make('status')->default('true'),
+                Hidden::make('status')->default(true),
             ])
             ->action(function (array $data): void {
                 try {
@@ -143,7 +153,8 @@ class NuevaOrden extends Page implements HasForms, HasActions
                         $existingCashBox->update([
                             'user_id' => Auth::id(),
                             'initial_balance' => $data['initial_balance'],
-                            'status' => 'true',
+                            'current_balance' => $data['initial_balance'], // Corregido: actualizar balance actual
+                            'status' => true,
                         ]);
                     } else {
                         // Si no existe, la creamos
@@ -153,12 +164,15 @@ class NuevaOrden extends Page implements HasForms, HasActions
                             'user_id' => Auth::id(),
                             'initial_balance' => $data['initial_balance'],
                             'current_balance' => $data['initial_balance'],
-                            'status' => 'true',
+                            'status' => true,
                         ]);
                     }
 
-                    // Actualizar el estado de la página para ocultar el botón
+                    // Actualizar el estado de la página para ocultar el botón y recargar datos
                     $this->isCashBoxOpen = true;
+                    $this->loadTodaySalesTotal();
+                    $this->loadCashBoxBalance();
+                    $this->loadMenuProducts();
 
                     // Notificación de éxito
                     Notification::make()
@@ -167,10 +181,11 @@ class NuevaOrden extends Page implements HasForms, HasActions
                         ->send();
                         
                 } catch (\Exception $e) {
+                    Log::error('Error al abrir la caja: ' . $e->getMessage());
                     // Notificación de error con el mensaje de la excepción para depuración
                     Notification::make()
                         ->title('Error al abrir la caja')
-                        ->body('Ocurrió un error: ')
+                        ->body($e->getMessage())
                         ->danger()
                         ->send();
                 }
@@ -197,7 +212,7 @@ class NuevaOrden extends Page implements HasForms, HasActions
         $userBranchId = Auth::user()->branch_id;
         if ($userBranchId) {
             $cashBox = CashBox::where('branch_id', $userBranchId)
-                               ->where('status', 'true') // Asume que la caja está abierta
+                               ->where('status', true) // Asume que la caja está abierta
                                ->first();
             $this->currentCashBoxBalance = $cashBox ? $cashBox->current_balance : 0;
         }
@@ -294,7 +309,7 @@ class NuevaOrden extends Page implements HasForms, HasActions
         }
 
         $cashBox = CashBox::where('branch_id', $userBranchId)
-                        ->where('status', 'true')
+                        ->where('status', true)
                         ->first();
 
         if (!$cashBox) {

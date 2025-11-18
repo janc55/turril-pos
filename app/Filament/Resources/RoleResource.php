@@ -41,6 +41,7 @@ class RoleResource extends Resource
                 
                 Section::make('Permisos')
                     ->description('Selecciona los permisos que deseas asignar a este rol.')
+                    ->columnSpan('full')
                     ->schema([
                         CheckboxList::make('permissions')
                             ->label('Permisos')

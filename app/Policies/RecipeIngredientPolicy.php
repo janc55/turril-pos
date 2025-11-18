@@ -37,7 +37,7 @@ class RecipeIngredientPolicy
      */
     public function update(User $user, RecipeIngredient $recipeIngredient): bool
     {
-        return false;
+        return $user->hasPermissionTo('update_recipe_ingredient');
     }
 
     /**
